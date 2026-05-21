@@ -39,11 +39,11 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 /* HEADER */
 .site-header{background:var(--navy);color:white;height:56px;display:flex;align-items:center;padding:0 1.5rem;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .header-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
-.h-logo{display:flex;align-items:center;gap:8px}
-.h-logo-mark{width:28px;height:28px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.h-logo{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+.h-logo-mark{width:28px;height:28px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .h-logo-mark svg{width:16px;height:16px;fill:var(--navy)}
-.h-logo-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;font-weight:600}
-.h-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-left:10px;border-left:1px solid rgba(255,255,255,.15);padding-left:10px;letter-spacing:.06em;text-transform:uppercase}
+.h-logo-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;font-weight:600;white-space:nowrap}
+.h-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-left:10px;border-left:1px solid rgba(255,255,255,.15);padding-left:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .h-actions{display:flex;gap:.4rem;align-items:center}
 .btn-h{display:flex;align-items:center;gap:5px;padding:.35rem .7rem;border-radius:var(--radius);font-size:12px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;border:none;transition:all .15s}
 .btn-h-ghost{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
@@ -79,13 +79,13 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 
 /* PAGES */
 .section-page{display:none}.section-page.active{display:block}
-.page-title{font-family:Georgia,'Times New Roman',serif;font-size:1.45rem;font-weight:400;color:var(--navy);margin-bottom:.2rem}
-.page-sub{font-size:12.5px;color:var(--text3);margin-bottom:1.5rem}
+.page-title{font-family:Georgia,'Times New Roman',serif;font-size:1.45rem;font-weight:400;color:var(--navy);margin-bottom:.2rem;word-break:break-word;overflow-wrap:break-word}
+.page-sub{font-size:12.5px;color:var(--text3);margin-bottom:1.5rem;word-break:break-word;overflow-wrap:break-word;white-space:normal}
 
 /* CARDS */
 .card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:1rem;overflow:hidden}
 .card-hd{padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:#fdfcfb}
-.card-title{font-size:.9rem;font-weight:600}
+.card-title{font-size:.9rem;font-weight:600;min-width:0;word-break:break-word}
 .card-body{padding:1.25rem}
 
 /* FORMS */
@@ -111,7 +111,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .pos-hd{display:flex;align-items:center;padding:.7rem 1rem;cursor:pointer;gap:9px;transition:background .15s}
 .pos-hd:hover{background:#fafaf8}
 .pos-num{width:22px;height:22px;background:var(--navy3);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:ui-monospace,'Cascadia Code','Courier New',monospace;flex-shrink:0}
-.pos-title{flex:1;font-size:13.5px;font-weight:500}
+.pos-title{flex:1;font-size:13.5px;font-weight:500;min-width:0;word-break:break-word;overflow-wrap:break-word}
 .pos-val{font-family:ui-monospace,'Cascadia Code','Courier New',monospace;font-size:13px;font-weight:500;color:var(--navy2)}
 .pos-chev{color:var(--text3);transition:transform .2s;font-size:15px}
 .pos-card.open .pos-chev{transform:rotate(180deg)}
