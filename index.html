@@ -1266,6 +1266,7 @@ function loadAll(data){
 // NAVIGATION
 // =============================================
 function showPage(name){
+  window.scrollTo({top:0,behavior:'instant'});
   document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page_'+name).classList.add('active');
