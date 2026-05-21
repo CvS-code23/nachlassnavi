@@ -1093,12 +1093,19 @@ const GITHUB_REPO   = 'nachlasspilot';
 let npCodes = null;
 
 async function gateLoadCodes(){
-  try{
-    const r = await fetch('./codes.json?t='+Date.now());
-    if(!r.ok) throw new Error('not found');
-    const d = await r.json();
-    npCodes = Array.isArray(d.codes) && d.codes.length ? d.codes : [FALLBACK_CODE];
-  } catch(e){ npCodes = [FALLBACK_CODE]; }
+  const urls = [
+    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/codes.json?t=${Date.now()}`,
+    `./codes.json?t=${Date.now()}`
+  ];
+  for(const url of urls){
+    try{
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      const d = await r.json();
+      if(Array.isArray(d.codes) && d.codes.length){ npCodes = d.codes; return; }
+    }catch(e){}
+  }
+  npCodes = [FALLBACK_CODE];
 }
 
 (function(){
