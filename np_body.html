@@ -1,0 +1,264 @@
+<!-- DATENSCHUTZ MODAL -->
+<div class="modal-overlay" id="modal_ds">
+  <div class="modal">
+    <div class="modal-logo">
+      <div class="modal-mark"><svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg></div>
+      <span class="modal-name">Nachlasspilot</span>
+    </div>
+    <h2>Willkommen beim Nachlassverzeichnis</h2>
+    <p>Mit dieser Anwendung erstellen Sie ein vollständiges, formales Nachlassverzeichnis – mit Immobilienbewertung, Bankguthaben, Wertpapieren, Fahrzeugen und allen weiteren Vermögensgegenständen.</p>
+    <p>Am Ende exportieren Sie ein PDF-Dokument, das Ihrer Anwältin oder dem Gericht vorgelegt werden kann.</p>
+    <div class="modal-notice">
+      <strong>🔒 Ihre Daten bleiben auf Ihrem Gerät</strong>
+      Es werden keine Daten an Server übertragen. Alle Angaben verbleiben ausschließlich in Ihrem Browser. Speichern Sie Ihre Arbeit regelmäßig über „💾 Speichern".
+    </div>
+    <p style="font-size:12px;color:var(--text3)">Immobilienwerte basieren auf rechnerischen Schätzungen und ersetzen kein Sachverständigengutachten (§ 194 BauGB). Dieses Tool dient der Vorbereitung – Ihre Anwältin prüft die Angaben.</p>
+    <button class="btn-primary" onclick="closeModal()">Verstanden – Nachlassverzeichnis starten</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="h-logo">
+      <div class="h-logo-mark"><svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg></div>
+      <span class="h-logo-name">Nachlasspilot</span>
+      <span class="h-logo-sub">Nachlassverzeichnis</span>
+    </div>
+    <div class="h-actions">
+      <span class="as-dot" title="Auto-Speicherung aktiv"></span>
+      <button class="btn-h btn-h-ghost" onclick="document.getElementById('json_imp').click()">📂 Laden</button>
+      <input type="file" id="json_imp" accept=".json" style="display:none" onchange="importJSON(event)">
+      <button class="btn-h btn-h-ghost" onclick="exportJSON()">💾 Speichern</button>
+      <button class="btn-h btn-h-pdf" onclick="exportPDF()">📄 PDF exportieren</button>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Nachlassverzeichnis</div>
+    <div class="nav-item active" onclick="showPage('erblasser')"><div class="nav-icon">👤</div>Erblasser</div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Aktiva</div>
+    <div class="nav-item" onclick="showPage('immobilien')"><div class="nav-icon">🏠</div>Immobilien<span class="nav-right" id="ns_immobilien">–</span></div>
+    <div class="nav-item" onclick="showPage('bankkonten')"><div class="nav-icon">🏦</div>Bankkonten<span class="nav-right" id="ns_bankkonten">–</span></div>
+    <div class="nav-item" onclick="showPage('wertpapiere')"><div class="nav-icon">📈</div>Wertpapiere<span class="nav-right" id="ns_wertpapiere">–</span></div>
+    <div class="nav-item" onclick="showPage('fahrzeuge')"><div class="nav-icon">🚗</div>Fahrzeuge<span class="nav-right" id="ns_fahrzeuge">–</span></div>
+    <div class="nav-item" onclick="showPage('versicherungen')"><div class="nav-icon">🛡</div>Versicherungen<span class="nav-right" id="ns_versicherungen">–</span></div>
+    <div class="nav-item" onclick="showPage('beteiligungen')"><div class="nav-icon">🏢</div>Beteiligungen<span class="nav-right" id="ns_beteiligungen">–</span></div>
+    <div class="nav-item" onclick="showPage('wertgegenstaende')"><div class="nav-icon">💎</div>Wertgegenstände<span class="nav-right" id="ns_wertgegenstaende">–</span></div>
+    <div class="nav-item" onclick="showPage('forderungen')"><div class="nav-icon">📋</div>Forderungen<span class="nav-right" id="ns_forderungen">–</span></div>
+    <div class="nav-item" onclick="showPage('sonstiges')"><div class="nav-icon">📦</div>Sonstiges<span class="nav-right" id="ns_sonstiges">–</span></div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Passiva</div>
+    <div class="nav-item" onclick="showPage('verbindlichkeiten')"><div class="nav-icon">📉</div>Verbindlichkeiten<span class="nav-right passiva-c" id="ns_verbindlichkeiten">–</span></div>
+    <div class="sb-divider"></div>
+    <div class="nav-item" onclick="showPage('dashboard')"><div class="nav-icon">📊</div><strong>Zusammenfassung</strong></div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="sb-totals">
+    <div class="sb-t-row"><span class="sb-t-label">Aktiva gesamt</span><span class="sb-t-val aktiva-c" id="tot_aktiva">–</span></div>
+    <div class="sb-t-row"><span class="sb-t-label">Passiva gesamt</span><span class="sb-t-val passiva-c" id="tot_passiva">–</span></div>
+    <div class="sb-t-div"></div>
+    <div class="sb-t-row"><span class="sb-t-label" style="color:white;font-weight:600">Reinnachlass</span><span class="sb-t-val netto-c" id="tot_netto">–</span></div>
+  </div>
+  <div class="sb-footer">
+    <span class="sb-footer-link" onclick="openDSModal()">Datenschutz</span>
+  </div>
+</nav>
+
+<!-- DATENSCHUTZERKLÄRUNG MODAL -->
+<div class="modal-overlay" id="modal_dserkl" style="display:none" onclick="if(event.target===this)closeDSModal()">
+  <div class="modal modal-wide">
+    <div class="modal-logo">
+      <div class="modal-mark"><svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg></div>
+      <span class="modal-name">Datenschutzerklärung</span>
+    </div>
+
+    <div class="ds-highlight">
+      🔒 <strong>Ihre Nachlassdaten verlassen Ihren Browser nicht.</strong> Alle eingegebenen Daten werden ausschließlich lokal auf Ihrem Gerät gespeichert und verarbeitet.
+    </div>
+
+    <div class="ds-section">1. Verantwortlicher</div>
+    <div class="ds-p">Rechtsanwältin Dr. Astrid von Schoenebeck<br>Reichsstraße 4, 14052 Berlin<br>E-Mail: <a href="mailto:kanzlei@vonschoenebeck.de" style="color:var(--navy2)">kanzlei@vonschoenebeck.de</a></div>
+
+    <div class="ds-section">2. Lokale Datenverarbeitung</div>
+    <div class="ds-p">Der Nachlasspilot verarbeitet alle von Ihnen eingegebenen Daten (Namen, Adressen, Vermögenswerte etc.) ausschließlich lokal in Ihrem Browser. Es findet <strong>keine Übertragung</strong> dieser Daten an Server oder Dritte statt. Die Daten werden im <code>localStorage</code> Ihres Browsers gespeichert und verlassen Ihr Gerät zu keinem Zeitpunkt automatisch.</div>
+    <div class="ds-p">Den Export (JSON-Datei, PDF) steuern Sie selbst – diese Dateien werden direkt auf Ihr Gerät gespeichert.</div>
+
+    <div class="ds-section">3. Server-Logfiles beim Seitenaufruf</div>
+    <div class="ds-p">Beim Aufruf dieser Website erfasst der Hosting-Anbieter automatisch technische Zugriffsdaten in sog. Server-Logfiles:</div>
+    <ul class="ds-ul">
+      <li>IP-Adresse des anfragenden Geräts</li>
+      <li>Datum und Uhrzeit des Abrufs</li>
+      <li>Name der abgerufenen Datei</li>
+      <li>Browser-Typ, -Version und Betriebssystem</li>
+    </ul>
+    <div class="ds-p">Diese Daten sind technisch notwendig für den Betrieb der Website und werden nicht mit anderen Datenquellen zusammengeführt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse). Die Logs werden nach spätestens 14 Tagen automatisch gelöscht.</div>
+
+    <div class="ds-section">4. Cookies</div>
+    <div class="ds-p">Diese Website setzt <strong>keine Cookies</strong>. Der <code>localStorage</code> ist kein Cookie und wird nicht für Tracking oder Werbung verwendet.</div>
+
+    <div class="ds-section">5. Drittanbieter-Dienste</div>
+    <div class="ds-p">Es werden <strong>keine externen Dienste</strong> eingebunden – keine Analyse-Tools, kein Tracking, keine Werbung, keine Social-Media-Plugins, keine externen Schriften oder Skripte. Die Anwendung funktioniert vollständig ohne Verbindungen zu Dritten.</div>
+
+    <div class="ds-section">6. Ihre Rechte (Art. 15–22 DSGVO)</div>
+    <div class="ds-p">Sie haben das Recht auf:</div>
+    <ul class="ds-ul">
+      <li><strong>Auskunft</strong> über die zu Ihrer Person gespeicherten Daten (Art. 15)</li>
+      <li><strong>Berichtigung</strong> unrichtiger Daten (Art. 16)</li>
+      <li><strong>Löschung</strong> Ihrer Daten (Art. 17) – lokal jederzeit über die Browser-Einstellungen möglich</li>
+      <li><strong>Einschränkung</strong> der Verarbeitung (Art. 18)</li>
+      <li><strong>Widerspruch</strong> gegen die Verarbeitung (Art. 21)</li>
+      <li><strong>Datenübertragbarkeit</strong> (Art. 20) – über die JSON-Exportfunktion</li>
+    </ul>
+    <div class="ds-p">Zur Ausübung Ihrer Rechte wenden Sie sich an: <a href="mailto:kanzlei@vonschoenebeck.de" style="color:var(--navy2)">kanzlei@vonschoenebeck.de</a></div>
+
+    <div class="ds-section">7. Beschwerderecht</div>
+    <div class="ds-p">Sie haben das Recht, sich bei der zuständigen Datenschutz-Aufsichtsbehörde zu beschweren:</div>
+    <div class="ds-p">Berliner Beauftragte für Datenschutz und Informationsfreiheit<br>Friedrichstr. 219, 10969 Berlin<br><a href="https://www.datenschutz-berlin.de" target="_blank" style="color:var(--navy2)">www.datenschutz-berlin.de</a></div>
+
+    <div class="ds-section">8. Aktualität</div>
+    <div class="ds-p" style="color:var(--text3);font-size:11.5px">Stand: Mai 2026. Diese Erklärung kann bei Änderungen des Dienstes aktualisiert werden.</div>
+
+    <button class="btn-primary" onclick="closeDSModal()">Schließen</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main-content">
+
+  <!-- ERBLASSER -->
+  <div class="section-page active" id="page_erblasser">
+    <div class="page-title">Erblasser</div>
+    <div class="page-sub">Angaben zur verstorbenen Person – erscheinen auf dem Deckblatt des PDF-Dokuments</div>
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Persönliche Daten</span></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field form-full"><label>Vollständiger Name *</label><input type="text" id="erl_name" placeholder="z.B. Maria Mustermann" oninput="autoSave()"></div>
+          <div class="field"><label>Geburtsdatum *</label><input type="date" id="erl_geburt" oninput="autoSave()"></div>
+          <div class="field"><label>Sterbedatum *</label><input type="date" id="erl_sterben" oninput="autoSave()"></div>
+          <div class="field"><label>Geburtsname (falls abweichend)</label><input type="text" id="erl_geburtsname" placeholder="z.B. Müller" oninput="autoSave()"></div>
+          <div class="field"><label>Staatsangehörigkeit</label><input type="text" id="erl_staat" value="Deutsch" oninput="autoSave()"></div>
+          <div class="field form-full"><label>Letzte Wohnanschrift *</label><input type="text" id="erl_adresse" placeholder="z.B. Musterstraße 1, 80331 München" oninput="autoSave()"></div>
+          <div class="field"><label>Sterbeort</label><input type="text" id="erl_sterbeort" placeholder="z.B. München" oninput="autoSave()"></div>
+          <div class="field"><label>Standesamt / Sterberegister</label><input type="text" id="erl_standesamt" placeholder="z.B. Standesamt München" oninput="autoSave()"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Verfahrensdaten</span></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field"><label>Aktenzeichen</label><input type="text" id="erl_aktenzeichen" placeholder="z.B. 2 VI 123/25" oninput="autoSave()"></div>
+          <div class="field"><label>Zuständiges Nachlassgericht</label><input type="text" id="erl_gericht" placeholder="z.B. AG München" oninput="autoSave()"></div>
+          <div class="field"><label>Erstellungsdatum</label><input type="date" id="erl_erstelldatum" oninput="autoSave()"></div>
+          <div class="field"><label>Erstellt von (Name des Erben)</label><input type="text" id="erl_ersteller" placeholder="z.B. Thomas Mustermann" oninput="autoSave()"></div>
+          <div class="field form-full"><label>Verhältnis zum Erblasser</label><input type="text" id="erl_verhaeltnis" placeholder="z.B. Sohn / Alleinerbe / Testamentsvollstrecker" oninput="autoSave()"></div>
+          <div class="field form-full"><label>Anmerkungen / Besonderheiten</label><textarea id="erl_anmerkung" placeholder="z.B. Testamentsvollstreckung angeordnet, Erbschein beantragt …" oninput="autoSave()"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMMOBILIEN -->
+  <div class="section-page" id="page_immobilien">
+    <div class="page-title">Immobilien</div>
+    <div class="page-sub">Grundvermögen – Bewertung nach Vergleichswert-, Ertragswert- und Sachwertverfahren (§§ 182–198 BewG)</div>
+    <div class="pos-list" id="list_immobilien"></div>
+    <button class="btn-add" onclick="addPos('immobilien')">+ Immobilie hinzufügen</button>
+    <div class="sum-row" id="sum_immobilien" style="display:none"><span class="sum-label">Summe Immobilien</span><span class="sum-val" id="sv_immobilien">–</span></div>
+  </div>
+
+  <!-- BANKKONTEN -->
+  <div class="section-page" id="page_bankkonten">
+    <div class="page-title">Bankkonten & Bargeld</div>
+    <div class="page-sub">Giro-, Spar- und Tagesgeldkonten, Sparbücher, Bargeld</div>
+    <div class="pos-list" id="list_bankkonten"></div>
+    <button class="btn-add" onclick="addPos('bankkonten')">+ Konto / Bargeld hinzufügen</button>
+    <div class="sum-row" id="sum_bankkonten" style="display:none"><span class="sum-label">Summe Bankguthaben & Bargeld</span><span class="sum-val" id="sv_bankkonten">–</span></div>
+  </div>
+
+  <!-- WERTPAPIERE -->
+  <div class="section-page" id="page_wertpapiere">
+    <div class="page-title">Wertpapiere & Investments</div>
+    <div class="page-sub">Aktien, ETFs, Fonds, Anleihen, Kryptowährungen</div>
+    <div class="pos-list" id="list_wertpapiere"></div>
+    <button class="btn-add" onclick="addPos('wertpapiere')">+ Wertpapier / Depot hinzufügen</button>
+    <div class="sum-row" id="sum_wertpapiere" style="display:none"><span class="sum-label">Summe Wertpapiere</span><span class="sum-val" id="sv_wertpapiere">–</span></div>
+  </div>
+
+  <!-- FAHRZEUGE -->
+  <div class="section-page" id="page_fahrzeuge">
+    <div class="page-title">Fahrzeuge</div>
+    <div class="page-sub">PKW, Motorräder, Boote, Wohnmobile, Nutzfahrzeuge</div>
+    <div class="pos-list" id="list_fahrzeuge"></div>
+    <button class="btn-add" onclick="addPos('fahrzeuge')">+ Fahrzeug hinzufügen</button>
+    <div class="sum-row" id="sum_fahrzeuge" style="display:none"><span class="sum-label">Summe Fahrzeuge</span><span class="sum-val" id="sv_fahrzeuge">–</span></div>
+  </div>
+
+  <!-- VERSICHERUNGEN -->
+  <div class="section-page" id="page_versicherungen">
+    <div class="page-title">Lebens- & Rentenversicherungen</div>
+    <div class="page-sub">Kapitalbildende Versicherungen mit Rückkaufwert</div>
+    <div class="pos-list" id="list_versicherungen"></div>
+    <button class="btn-add" onclick="addPos('versicherungen')">+ Versicherung hinzufügen</button>
+    <div class="sum-row" id="sum_versicherungen" style="display:none"><span class="sum-label">Summe Versicherungen (Rückkaufwerte)</span><span class="sum-val" id="sv_versicherungen">–</span></div>
+  </div>
+
+  <!-- BETEILIGUNGEN -->
+  <div class="section-page" id="page_beteiligungen">
+    <div class="page-title">Beteiligungen & Unternehmensanteile</div>
+    <div class="page-sub">GmbH, AG, KG, stille Beteiligungen, Genossenschaften</div>
+    <div class="pos-list" id="list_beteiligungen"></div>
+    <button class="btn-add" onclick="addPos('beteiligungen')">+ Beteiligung hinzufügen</button>
+    <div class="sum-row" id="sum_beteiligungen" style="display:none"><span class="sum-label">Summe Beteiligungen</span><span class="sum-val" id="sv_beteiligungen">–</span></div>
+  </div>
+
+  <!-- WERTGEGENSTÄNDE -->
+  <div class="section-page" id="page_wertgegenstaende">
+    <div class="page-title">Wertgegenstände</div>
+    <div class="page-sub">Schmuck, Kunst, Antiquitäten, Sammlungen, Edelmetalle</div>
+    <div class="pos-list" id="list_wertgegenstaende"></div>
+    <button class="btn-add" onclick="addPos('wertgegenstaende')">+ Wertgegenstand hinzufügen</button>
+    <div class="sum-row" id="sum_wertgegenstaende" style="display:none"><span class="sum-label">Summe Wertgegenstände</span><span class="sum-val" id="sv_wertgegenstaende">–</span></div>
+  </div>
+
+  <!-- FORDERUNGEN -->
+  <div class="section-page" id="page_forderungen">
+    <div class="page-title">Forderungen</div>
+    <div class="page-sub">Darlehen an Dritte, ausstehende Zahlungen, Mietkautionen</div>
+    <div class="pos-list" id="list_forderungen"></div>
+    <button class="btn-add" onclick="addPos('forderungen')">+ Forderung hinzufügen</button>
+    <div class="sum-row" id="sum_forderungen" style="display:none"><span class="sum-label">Summe Forderungen</span><span class="sum-val" id="sv_forderungen">–</span></div>
+  </div>
+
+  <!-- SONSTIGES -->
+  <div class="section-page" id="page_sonstiges">
+    <div class="page-title">Sonstiges Vermögen</div>
+    <div class="page-sub">Digitale Assets, Domains, Patente, Urheberrechte, Sonstiges</div>
+    <div class="pos-list" id="list_sonstiges"></div>
+    <button class="btn-add" onclick="addPos('sonstiges')">+ Position hinzufügen</button>
+    <div class="sum-row" id="sum_sonstiges" style="display:none"><span class="sum-label">Summe Sonstiges</span><span class="sum-val" id="sv_sonstiges">–</span></div>
+  </div>
+
+  <!-- VERBINDLICHKEITEN -->
+  <div class="section-page" id="page_verbindlichkeiten">
+    <div class="page-title">Verbindlichkeiten</div>
+    <div class="page-sub">Hypotheken, Kredite, Schulden – werden als Passiva vom Nachlass abgezogen</div>
+    <div class="pos-list" id="list_verbindlichkeiten"></div>
+    <button class="btn-add" onclick="addPos('verbindlichkeiten')">+ Verbindlichkeit hinzufügen</button>
+    <div class="sum-row" id="sum_verbindlichkeiten" style="display:none;background:var(--red)"><span class="sum-label">Summe Verbindlichkeiten</span><span class="sum-val" id="sv_verbindlichkeiten">–</span></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section-page" id="page_dashboard">
+    <div class="page-title">Zusammenfassung</div>
+    <div class="page-sub">Gesamtübersicht des Nachlasses – Grundlage für den PDF-Export</div>
+    <div id="dashboard_content"></div>
+  </div>
+
+</main>

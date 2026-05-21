@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImmoWert – Immobilienbewertung</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1b2d;--navy2:#1a2d47;--navy3:#243d5c;
+  --amber:#e8a235;--amber2:#f5c26b;
+  --cream:#f7f4ef;--cream2:#ede9e0;
+  --text:#1a1a2e;--text2:#4a5568;--text3:#8a97aa;
+  --green:#2d7a4f;--green-bg:#e8f5ee;
+  --red:#c0392b;--red-bg:#fdf0ee;
+  --yellow:#b8860b;--yellow-bg:#fef9e7;
+  --border:#ddd8cf;--radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.05);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+.site-header{background:var(--navy);color:white;padding:0 2rem}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:18px;height:18px;fill:var(--navy)}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:600;letter-spacing:.01em}
+.logo-tag{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.08em;text-transform:uppercase;margin-left:12px;border-left:1px solid rgba(255,255,255,.15);padding-left:12px}
+.header-note{font-size:12px;color:rgba(255,255,255,.4)}
+.hero-band{background:var(--navy2);color:white;padding:2rem;border-bottom:1px solid var(--navy3)}
+.hero-inner{max-width:1100px;margin:0 auto}
+.hero-inner h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:400;margin-bottom:.4rem}
+.hero-inner p{font-size:13px;color:rgba(255,255,255,.55);max-width:640px}
+
+.main{max-width:1100px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
+@media(max-width:820px){.main{grid-template-columns:1fr;padding:1rem}}
+
+.section{background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;user-select:none;transition:background .15s}
+.section-header:hover{background:#fafaf8}
+.section-header-left{display:flex;align-items:center;gap:12px}
+.section-num{width:26px;height:26px;background:var(--navy);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;font-family:'DM Mono',monospace}
+.section-title{font-size:.95rem;font-weight:600;color:var(--text)}
+.section-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.section-chevron{color:var(--text3);transition:transform .2s;font-size:18px}
+.section.open .section-chevron{transform:rotate(180deg)}
+.section-body{display:none;padding:1.25rem;border-top:1px solid var(--border);background:#fdfcfb}
+.section.open .section-body{display:block}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.form-full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{border:1px solid var(--border);border-radius:var(--radius);padding:.55rem .75rem;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:white;transition:border-color .15s,box-shadow .15s;width:100%}
+.field input:focus,.field select:focus{outline:none;border-color:var(--navy2);box-shadow:0 0 0 3px rgba(26,45,71,.08)}
+.field .hint{font-size:11px;color:var(--text3);margin-top:2px}
+
+.range-wrap{display:flex;align-items:center;gap:10px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--navy2)}
+.range-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;min-width:60px;text-align:right;color:var(--navy2)}
+
+.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem}
+.check-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer}
+.check-item input{accent-color:var(--navy2);width:14px;height:14px;flex-shrink:0}
+
+.btn-calc{width:100%;padding:.9rem;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s,transform .1s;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-calc:hover{background:var(--navy2)}
+.btn-calc:active{transform:scale(.99)}
+.btn-calc svg{width:18px;height:18px;fill:white}
+
+.panel-wrap{position:sticky;top:1rem}
+.panel{background:white;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+.panel-header{background:var(--navy);color:white;padding:1.25rem;text-align:center}
+.panel-header h2{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400}
+.panel-header p{font-size:12px;opacity:.55;margin-top:3px}
+.panel-body{padding:1.25rem}
+.panel-placeholder{text-align:center;padding:2rem 1rem;color:var(--text3)}
+.panel-placeholder svg{width:48px;height:48px;fill:var(--cream2);margin:0 auto 1rem;display:block}
+.panel-placeholder p{font-size:13px}
+
+.result-hidden{display:none}
+.result-score{text-align:center;padding:1.5rem 0 1rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+.result-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.4rem}
+.result-main{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--navy);line-height:1}
+.result-range{font-size:12px;color:var(--text3);margin-top:.3rem;font-family:'DM Mono',monospace}
+.result-ampel{display:inline-flex;align-items:center;gap:6px;padding:.3rem .75rem;border-radius:20px;font-size:12px;font-weight:600;margin-top:.6rem}
+.ampel-green{background:var(--green-bg);color:var(--green)}
+.ampel-yellow{background:var(--yellow-bg);color:var(--yellow)}
+.ampel-red{background:var(--red-bg);color:var(--red)}
+.ampel-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+.verfahren-grid{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+.verfahren-item{background:var(--cream);border-radius:var(--radius);padding:.75rem}
+.verfahren-top{display:flex;justify-content:space-between;align-items:baseline}
+.verfahren-name{font-size:12px;font-weight:600;color:var(--text2)}
+.verfahren-weight{font-size:10px;color:var(--text3)}
+.verfahren-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--navy)}
+.verfahren-bar{height:3px;background:var(--cream2);border-radius:2px;margin-top:.4rem}
+.verfahren-fill{height:3px;background:var(--navy2);border-radius:2px;transition:width .6s}
+
+.factors-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.5rem}
+.factor-row{display:flex;justify-content:space-between;font-size:12px;padding:.25rem 0;border-bottom:1px solid var(--cream2)}
+.factor-row:last-child{border:none}
+.factor-name{color:var(--text2)}
+.factor-val{font-family:'DM Mono',monospace;font-weight:500}
+.factor-pos{color:var(--green)}.factor-neg{color:var(--red)}.factor-neu{color:var(--text3)}
+
+.disclaimer{font-size:10px;color:var(--text3);text-align:center;padding:.75rem;border-top:1px solid var(--border);line-height:1.4;margin-top:.5rem}
+
+.rtab-wrap{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1rem}
+.rtab{flex:1;padding:.4rem;font-size:11px;font-weight:500;text-align:center;cursor:pointer;background:white;color:var(--text3);border:none;font-family:'DM Sans',sans-serif;transition:background .15s,color .15s}
+.rtab.active{background:var(--navy);color:white}
+.rtab-panel{display:none}.rtab-panel.active{display:block}
+
+.plz-info{margin-top:.75rem;padding:.65rem .85rem;border-radius:var(--radius);font-size:12.5px;line-height:1.5;border:1px solid transparent;transition:all .25s}
+.plz-ok{background:var(--green-bg);color:var(--green);border-color:#b6ddc7}
+.plz-warn{background:var(--yellow-bg);color:var(--yellow);border-color:#f0d98c}
+.plz-idle{background:var(--cream);color:var(--text2);border-color:var(--border)}
+.plz-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:.5rem}
+.plz-chip{background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.08);border-radius:4px;padding:2px 8px;font-family:'DM Mono',monospace;font-size:11px;color:var(--navy2)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg>
+      </div>
+      <span class="logo-name">ImmoWert</span>
+      <span class="logo-tag">Bewertungstool Deutschland</span>
+    </div>
+    <span class="header-note">Simulationsmodell · Keine Rechtsberatung</span>
+  </div>
+</header>
+
+<div class="hero-band">
+  <div class="hero-inner">
+    <h1>Immobilienbewertung für Deutschland</h1>
+    <p>Kombiniertes Verfahren aus Vergleichswert-, Ertragswert- und Sachwertmethode. Alle deutschen PLZ (01000–99999) werden unterstützt. Je mehr Angaben, desto präziser das Ergebnis.</p>
+  </div>
+</div>
+
+<div class="main">
+<div class="form-col">
+
+<!-- 1 Objektdaten -->
+<div class="section open" id="s1">
+  <div class="section-header" onclick="toggleSection('s1')">
+    <div class="section-header-left">
+      <div class="section-num">1</div>
+      <div><div class="section-title">Objektdaten</div><div class="section-sub">Grundlegende Immobilieninformationen</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field">
+        <label>Gebäudetyp</label>
+        <select id="gebaeude_typ">
+          <option value="">– bitte wählen –</option>
+          <option value="ETW">Eigentumswohnung (ETW)</option>
+          <option value="EFH">Einfamilienhaus (EFH)</option>
+          <option value="DHH">Doppelhaushälfte</option>
+          <option value="RH">Reihenhaus</option>
+          <option value="MFH">Mehrfamilienhaus (MFH)</option>
+          <option value="ZFH">Zweifamilienhaus</option>
+          <option value="Villa">Villa / Herrenhaus</option>
+          <option value="Bungalow">Bungalow</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Bauweise</label>
+        <select id="bauweise">
+          <option value="massiv">Massivbau</option>
+          <option value="fertig">Fertighaus</option>
+          <option value="fachwerk">Fachwerk</option>
+          <option value="holz">Holzbau</option>
+          <option value="platte">Plattenbau</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Wohnfläche (m²) *</label>
+        <input type="number" id="wohnflaeche" placeholder="z.B. 95" min="10" max="2000">
+      </div>
+      <div class="field">
+        <label>Nutzfläche (m²)</label>
+        <input type="number" id="nutzflaeche" placeholder="z.B. 30" min="0" max="1000">
+        <span class="hint">Keller, Abstellräume etc.</span>
+      </div>
+      <div class="field">
+        <label>Grundstücksfläche (m²)</label>
+        <input type="number" id="grundstueck" placeholder="z.B. 400 / 0 bei ETW" min="0" max="10000">
+      </div>
+      <div class="field">
+        <label>Baujahr *</label>
+        <input type="number" id="baujahr" placeholder="z.B. 1985" min="1800" max="2025">
+      </div>
+      <div class="field">
+        <label>Anzahl Zimmer</label>
+        <input type="number" id="zimmer" placeholder="z.B. 4" min="1" max="30" step="0.5">
+      </div>
+      <div class="field">
+        <label>Etage</label>
+        <select id="etage">
+          <option value="ug">Untergeschoss</option>
+          <option value="eg">Erdgeschoss</option>
+          <option value="1og" selected>1. Obergeschoss</option>
+          <option value="2og">2. Obergeschoss</option>
+          <option value="3og">3. Obergeschoss</option>
+          <option value="dg">Dachgeschoss</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ausrichtung</label>
+        <select id="ausrichtung">
+          <option value="">– unbekannt –</option>
+          <option value="sued">Süd</option>
+          <option value="suedwest">Südwest</option>
+          <option value="suedost">Südost</option>
+          <option value="ost">Ost</option>
+          <option value="west">West</option>
+          <option value="nord">Nord</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Energieeffizienzklasse</label>
+        <select id="energie_klasse">
+          <option value="">– unbekannt –</option>
+          <option value="Ap">A+</option><option value="A">A</option>
+          <option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option>
+          <option value="F">F</option><option value="G">G</option>
+          <option value="H">H</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Letztes Renovierungsjahr</label>
+        <input type="number" id="renovierung" placeholder="z.B. 2018 (leer = nie)" min="1950" max="2025">
+      </div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <label style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:.5rem">Ausstattungsmerkmale</label>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox" id="feat_aufzug"> Aufzug</label>
+        <label class="check-item"><input type="checkbox" id="feat_keller"> Keller</label>
+        <label class="check-item"><input type="checkbox" id="feat_garage"> Garage / Stellplatz</label>
+        <label class="check-item"><input type="checkbox" id="feat_balkon"> Balkon / Terrasse</label>
+        <label class="check-item"><input type="checkbox" id="feat_garten"> Garten</label>
+        <label class="check-item"><input type="checkbox" id="feat_einbaukueche"> Einbauküche</label>
+        <label class="check-item"><input type="checkbox" id="feat_fussboden"> Parkett / Dielen</label>
+        <label class="check-item"><input type="checkbox" id="feat_barrierefrei"> Barrierefrei</label>
+        <label class="check-item"><input type="checkbox" id="feat_photovoltaik"> Photovoltaik</label>
+        <label class="check-item"><input type="checkbox" id="feat_waermepumpe"> Wärmepumpe</label>
+        <label class="check-item"><input type="checkbox" id="feat_fussbodenheizung"> Fußbodenheizung</label>
+        <label class="check-item"><input type="checkbox" id="feat_sicherheit"> Smart Home / Alarm</label>
+      </div>
+    </div>
+
+    <div style="margin-top:1.25rem">
+      <label style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:.5rem">Objektzustand (Gesamteinschätzung)</label>
+      <div class="range-wrap">
+        <input type="range" id="zustand" min="1" max="10" value="5" oninput="document.getElementById('zustand_val').textContent=this.value+'/10'">
+        <span class="range-val" id="zustand_val">5/10</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px">
+        <span>Sanierungsbedürftig</span><span>Erstbezugsniveau</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 Lagedaten -->
+<div class="section" id="s2">
+  <div class="section-header" onclick="toggleSection('s2')">
+    <div class="section-header-left">
+      <div class="section-num">2</div>
+      <div><div class="section-title">Lagedaten</div><div class="section-sub">Adresse und Lage – PLZ unterstützt alle deutschen Postleitzahlen</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field form-full">
+        <label>Straße und Hausnummer</label>
+        <input type="text" id="strasse" placeholder="z.B. Musterstraße 42">
+      </div>
+      <div class="field">
+        <label>PLZ *</label>
+        <input type="text" id="plz" placeholder="z.B. 80331" maxlength="5" oninput="onPLZChange()">
+      </div>
+      <div class="field">
+        <label>Stadt / Gemeinde</label>
+        <input type="text" id="stadt" placeholder="automatisch befüllt">
+      </div>
+    </div>
+
+    <div class="plz-info plz-idle" id="plz_info">
+      Bitte 5-stellige PLZ eingeben – Bodenrichtwert, Marktpreis und Mietspiegel werden automatisch ermittelt (alle deutschen PLZ 01000–99999 unterstützt).
+    </div>
+
+    <div class="form-grid" style="margin-top:1rem">
+      <div class="field">
+        <label>Mikrolage</label>
+        <select id="mikrolage">
+          <option value="sehr_gut">Sehr gut (ruhig, Aussicht, Südseite)</option>
+          <option value="gut" selected>Gut</option>
+          <option value="mittel">Mittel</option>
+          <option value="einfach">Einfach</option>
+          <option value="schlecht">Schlecht (Lärm, Schatten)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Makrolage / Stadtlage</label>
+        <select id="makrolage">
+          <option value="innenstadt">Innenstadt / Bestlage</option>
+          <option value="innenstadtrand">Innenstadtrand</option>
+          <option value="stadtrand" selected>Stadtrand / Vorort</option>
+          <option value="laendlich">Ländlich</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>ÖPNV-Anbindung</label>
+        <select id="oepnv">
+          <option value="sehr_gut">Sehr gut (U/S-Bahn &lt;300m)</option>
+          <option value="gut" selected>Gut (Bus/Bahn &lt;500m)</option>
+          <option value="mittel">Mittel (Bus &lt;1km)</option>
+          <option value="schlecht">Schlecht / Kein ÖPNV</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Lärmbelastung / Straßentyp</label>
+        <select id="laerm">
+          <option value="sehr_ruhig">Sehr ruhig (Sackgasse)</option>
+          <option value="ruhig" selected>Ruhig (Nebenstraße)</option>
+          <option value="mittel">Mittel (Wohnstraße)</option>
+          <option value="laut">Laut (Hauptstraße)</option>
+          <option value="sehr_laut">Sehr laut (Schnellstraße)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 Marktdaten -->
+<div class="section" id="s3">
+  <div class="section-header" onclick="toggleSection('s3')">
+    <div class="section-header-left">
+      <div class="section-num">3</div>
+      <div><div class="section-title">Marktdaten</div><div class="section-sub">Automatisch aus PLZ – bei Bedarf manuell anpassbar</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div style="margin-bottom:.75rem;padding:.6rem .75rem;background:var(--green-bg);border-radius:var(--radius);font-size:12px;color:var(--green)">
+      ✓ Werte werden automatisch aus der PLZ-Datenbank befüllt und können manuell überschrieben werden.
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Bodenrichtwert (€/m²)</label>
+        <input type="number" id="bodenrichtwert" placeholder="aus PLZ" min="10" max="50000">
+        <span class="hint">BORIS-orientierter Schätzwert</span>
+      </div>
+      <div class="field">
+        <label>Ø Kaufpreis Lage (€/m²)</label>
+        <input type="number" id="marktpreis_qm" placeholder="aus PLZ" min="500" max="30000">
+        <span class="hint">Vergleichsobjekte</span>
+      </div>
+      <div class="field">
+        <label>Kaltmiete ortsüblich (€/m²/Mon.)</label>
+        <input type="number" id="miete_qm" placeholder="aus PLZ" min="3" max="50" step="0.5">
+      </div>
+      <div class="field">
+        <label>Leerstandsquote (%)</label>
+        <input type="number" id="leerstand" value="3" min="0" max="30" step="0.5">
+      </div>
+      <div class="field">
+        <label>Markttrend Region</label>
+        <select id="markttrend">
+          <option value="stark_steigend">Stark steigend (&gt;5% p.a.)</option>
+          <option value="steigend" selected>Steigend (2–5% p.a.)</option>
+          <option value="stabil">Stabil (0–2% p.a.)</option>
+          <option value="fallend">Fallend (&lt;0%)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Days on Market (Ø)</label>
+        <input type="number" id="dom" value="45" min="5" max="500">
+        <span class="hint">Vermarktungsdauer ähnl. Objekte</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 Makroökonomie -->
+<div class="section" id="s4">
+  <div class="section-header" onclick="toggleSection('s4')">
+    <div class="section-header-left">
+      <div class="section-num">4</div>
+      <div><div class="section-title">Makroökonomische Daten</div><div class="section-sub">Zinsen, Kaufkraft, Bevölkerungsentwicklung</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field">
+        <label>Bauzins 10 Jahre (% p.a.)</label>
+        <input type="number" id="bauzins" value="3.8" min="0" max="15" step="0.1">
+      </div>
+      <div class="field">
+        <label>Inflationsrate (% p.a.)</label>
+        <input type="number" id="inflation" value="2.5" min="0" max="20" step="0.1">
+      </div>
+      <div class="field">
+        <label>Bevölkerungsentwicklung</label>
+        <select id="bevoelkerung">
+          <option value="stark_wachsend">Stark wachsend</option>
+          <option value="wachsend" selected>Wachsend</option>
+          <option value="stabil">Stabil</option>
+          <option value="schrumpfend">Schrumpfend</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Kaufkraftindex (DE=100)</label>
+        <input type="number" id="kaufkraft" value="100" min="50" max="200">
+        <span class="hint">Automatisch aus PLZ befüllt</span>
+      </div>
+      <div class="field">
+        <label>Arbeitslosenquote Region (%)</label>
+        <input type="number" id="arbeitslos" value="5" min="0" max="30" step="0.1">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 Gebäudetechnik -->
+<div class="section" id="s5">
+  <div class="section-header" onclick="toggleSection('s5')">
+    <div class="section-header-left">
+      <div class="section-num">5</div>
+      <div><div class="section-title">Gebäudetechnik</div><div class="section-sub">Heizung, Dämmung, Modernisierungen</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field">
+        <label>Heizungsart</label>
+        <select id="heizung">
+          <option value="">– unbekannt –</option>
+          <option value="waermepumpe">Wärmepumpe</option>
+          <option value="fernwaerme">Fernwärme</option>
+          <option value="gas">Gas-Zentralheizung</option>
+          <option value="oel">Öl-Zentralheizung</option>
+          <option value="pellet">Pelletheizung</option>
+          <option value="elektro">Elektroheizung</option>
+          <option value="nachtspeicher">Nachtspeicher</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Heizungsalter (Jahre)</label>
+        <input type="number" id="heizung_alter" placeholder="z.B. 8" min="0" max="60">
+      </div>
+      <div class="field">
+        <label>Dämmstandard</label>
+        <select id="daemmung">
+          <option value="sehr_gut">Sehr gut (KfW 55 / Passivhaus)</option>
+          <option value="gut">Gut (KfW 70 / WSchVO 95+)</option>
+          <option value="mittel" selected>Mittel (EnEV 2009+)</option>
+          <option value="einfach">Einfach (Altbau gedämmt)</option>
+          <option value="kein">Nicht gedämmt</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Dachzustand</label>
+        <select id="dach">
+          <option value="neu">Neu / saniert (&lt;10 J.)</option>
+          <option value="gut" selected>Gut (10–25 J.)</option>
+          <option value="mittel">Mittel (25–40 J.)</option>
+          <option value="alt">Alt / sanierungsbedürftig</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:1rem">
+      <label style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:.5rem">Modernisierungshistorie (optional)</label>
+      <div class="form-grid">
+        <div class="field"><label>Bad saniert (Jahr)</label><input type="number" id="mod_bad" placeholder="z.B. 2019" min="1960" max="2025"></div>
+        <div class="field"><label>Küche saniert (Jahr)</label><input type="number" id="mod_kueche" placeholder="z.B. 2020" min="1960" max="2025"></div>
+        <div class="field"><label>Fenster erneuert (Jahr)</label><input type="number" id="mod_fenster" placeholder="z.B. 2015" min="1960" max="2025"></div>
+        <div class="field"><label>Elektro erneuert (Jahr)</label><input type="number" id="mod_elektro" placeholder="z.B. 2018" min="1960" max="2025"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 Rechtliches -->
+<div class="section" id="s6">
+  <div class="section-header" onclick="toggleSection('s6')">
+    <div class="section-header-left">
+      <div class="section-num">6</div>
+      <div><div class="section-title">Rechtliche Faktoren</div><div class="section-sub">Nutzungsart, Belastungen, Besonderheiten</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field">
+        <label>Nutzungsart (BauNVO)</label>
+        <select id="nutzungsart">
+          <option value="WA">WA – Allgemeines Wohngebiet</option>
+          <option value="WR">WR – Reines Wohngebiet</option>
+          <option value="MI">MI – Mischgebiet</option>
+          <option value="MD">MD – Dorfgebiet</option>
+          <option value="unbekannt" selected>Unbekannt</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Vermietungssituation</label>
+        <select id="vermietung">
+          <option value="leer" selected>Leerstand / Eigennutz</option>
+          <option value="vermietet_markt">Vermietet (Marktmiete)</option>
+          <option value="vermietet_unter">Vermietet (unter Markt)</option>
+          <option value="sozialmietwohnung">Sozialmietwohnung</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:.75rem">
+      <label style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:.5rem">Sonderbelastungen</label>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox" id="rec_denkmal"> Denkmalschutz</label>
+        <label class="check-item"><input type="checkbox" id="rec_erbbau"> Erbbaurecht</label>
+        <label class="check-item"><input type="checkbox" id="rec_grundschuld"> Grundschuld eingetragen</label>
+        <label class="check-item"><input type="checkbox" id="rec_wohnrecht"> Wohnrecht / Nießbrauch</label>
+        <label class="check-item"><input type="checkbox" id="rec_baulast"> Baulastenverzeichnis</label>
+        <label class="check-item"><input type="checkbox" id="rec_sangebiet"> Sanierungsgebiet</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 Transaktionsdaten -->
+<div class="section" id="s7">
+  <div class="section-header" onclick="toggleSection('s7')">
+    <div class="section-header-left">
+      <div class="section-num">7</div>
+      <div><div class="section-title">Transaktionsdaten</div><div class="section-sub">Optional – für Kalibrierung und Abgleich</div></div>
+    </div>
+    <span class="section-chevron">▼</span>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div class="field">
+        <label>Angebotspreis (€)</label>
+        <input type="number" id="angebotspreis" placeholder="z.B. 380.000">
+        <span class="hint">Abgleich mit Schätzwert im Ergebnis</span>
+      </div>
+      <div class="field">
+        <label>Vorheriger Kaufpreis (€)</label>
+        <input type="number" id="kaufpreis_alt" placeholder="z.B. 280.000">
+      </div>
+      <div class="field">
+        <label>Jahr des letzten Kaufs</label>
+        <input type="number" id="kaufjahr" placeholder="z.B. 2015" min="1900" max="2025">
+      </div>
+      <div class="field">
+        <label>Hist. Discount-Rate (%)</label>
+        <input type="number" id="discount" value="3" min="-10" max="20" step="0.5">
+        <span class="hint">Differenz Angebots- / Kaufpreis</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="btn-calc" onclick="berechnen()">
+  <svg viewBox="0 0 20 20"><path d="M9 12H5v-2h4V6h2v4h4v2h-4v4H9v-4zm1-12C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0z"/></svg>
+  Bewertung berechnen
+</button>
+<p style="font-size:11px;color:var(--text3);text-align:center;margin-top:.5rem">Berechnung vollständig lokal – keine Daten werden übertragen.</p>
+
+</div><!-- /form-col -->
+
+<!-- RESULT PANEL -->
+<div class="panel-wrap">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Bewertungsergebnis</h2>
+      <p>3 Verfahren · gewichtet · Deutschland</p>
+    </div>
+    <div class="panel-body">
+      <div id="panel_placeholder" class="panel-placeholder">
+        <svg viewBox="0 0 48 48"><path d="M24 4L4 14v20l20 10 20-10V14L24 4zm0 4l16 8v18L24 42 8 34V16l16-8z"/></svg>
+        <p>Füllen Sie das Formular aus und klicken Sie auf <strong>Bewertung berechnen</strong>.</p>
+      </div>
+      <div id="panel_result" class="result-hidden">
+        <div class="rtab-wrap">
+          <button class="rtab active" onclick="showTab(0)">Ergebnis</button>
+          <button class="rtab" onclick="showTab(1)">Verfahren</button>
+          <button class="rtab" onclick="showTab(2)">Faktoren</button>
+        </div>
+        <div class="rtab-panel active" id="tab0">
+          <div class="result-score">
+            <div class="result-label">Geschätzter Marktwert</div>
+            <div class="result-main" id="res_main">–</div>
+            <div class="result-range" id="res_range">–</div>
+            <div id="res_ampel"></div>
+          </div>
+          <div style="margin-bottom:.75rem">
+            <div class="factors-title">Kennzahlen</div>
+            <div class="factor-row"><span class="factor-name">Wert je m² Wfl.</span><span class="factor-val" id="res_qm">–</span></div>
+            <div class="factor-row"><span class="factor-name">Bodenwertanteil</span><span class="factor-val" id="res_boden">–</span></div>
+            <div class="factor-row"><span class="factor-name">Brutto-Mietrendite</span><span class="factor-val" id="res_rendite">–</span></div>
+            <div class="factor-row"><span class="factor-name">Kaufpreisfaktor (KPF)</span><span class="factor-val" id="res_kpf">–</span></div>
+            <div class="factor-row" id="row_angebot" style="display:none"><span class="factor-name">Angebotspreis Differenz</span><span class="factor-val" id="res_diff">–</span></div>
+          </div>
+        </div>
+        <div class="rtab-panel" id="tab1">
+          <div class="verfahren-grid" id="verfahren_grid"></div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.5">Gewichtung: Vergleichswert 50% · Ertragswert 30% · Sachwert 20% (Wohnimmobilien)</div>
+        </div>
+        <div class="rtab-panel" id="tab2">
+          <div class="factors-title">Wertbeeinflussende Faktoren</div>
+          <div id="factors_list"></div>
+        </div>
+        <div class="disclaimer">Orientierungsschätzung auf Basis simulierter Regionaldaten. Kein Ersatz für ein Sachverständigengutachten. Stand: 2025.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// PLZ-Lookup: alle deutschen PLZ (01000-99999)
+// Deterministisches Modell auf Basis regionaler Preiskorridore
+const PLZ_REGIONEN = [
+  ["01","Dresden",400,1200,2500,5000,8.0,12.0,88,93],
+  ["02","Görlitz/Bautzen",60,300,800,2000,5.5,8.0,80,87],
+  ["03","Cottbus",80,250,900,2200,5.5,8.5,81,87],
+  ["04","Leipzig",400,1200,2500,5500,8.5,12.0,89,94],
+  ["06","Halle/Saale",150,600,1500,3500,7.0,10.5,83,90],
+  ["07","Gera/Jena",100,800,1200,4500,6.5,13.0,83,93],
+  ["08","Zwickau/Vogtl.",60,300,700,2000,5.0,7.5,80,86],
+  ["09","Chemnitz",80,500,900,2800,5.5,9.0,82,88],
+  ["10","Berlin Mitte",1500,4000,5500,10000,14.0,19.0,96,101],
+  ["12","Berlin Süd",700,2000,3500,7000,12.0,16.0,92,97],
+  ["13","Berlin Nord",600,1800,3000,6500,11.5,15.5,91,96],
+  ["14","Potsdam/Berl.W.",800,2800,3500,7500,12.0,16.5,92,98],
+  ["15","Bbg./Berl.Umld.",100,500,1200,3500,7.0,11.0,84,90],
+  ["16","Neuruppin",60,250,700,2000,5.5,8.0,80,86],
+  ["17","Neubrandenburg",50,300,700,2200,5.5,8.5,79,86],
+  ["18","Rostock",300,1200,2500,5500,8.5,12.5,87,92],
+  ["19","Schwerin",150,600,1500,3500,7.0,10.0,83,88],
+  ["20","Hamburg City",2500,5000,7000,12000,15.0,21.0,97,102],
+  ["21","Hamburg Süd",800,2200,4000,8000,12.0,16.0,92,97],
+  ["22","Hamburg W/N",1200,4000,5000,10000,13.0,18.0,93,99],
+  ["23","Lübeck/Holst.",300,1200,2500,5500,9.0,13.5,87,93],
+  ["24","Kiel/Rendsburg",300,1200,2500,5500,9.0,13.5,88,93],
+  ["25","Heide/Dithmars.",100,500,1200,3500,7.0,10.5,83,89],
+  ["26","Oldenburg",300,1000,2200,4500,8.5,12.0,87,92],
+  ["27","Bremerhaven",150,600,1500,3500,7.5,10.5,84,89],
+  ["28","Bremen",500,1500,2800,5500,10.0,14.0,89,94],
+  ["29","Lüneburg",200,800,1800,4000,8.0,11.5,85,91],
+  ["30","Hannover",700,1800,3000,5500,11.0,14.5,91,96],
+  ["31","Hildesheim",150,600,1500,3200,7.5,10.5,84,89],
+  ["32","Herford/Bielef.",150,600,1500,3500,7.5,10.5,84,90],
+  ["33","Bielefeld/Paderb",200,900,1800,4200,8.0,12.0,86,92],
+  ["34","Kassel",200,800,1800,4000,8.0,11.5,85,91],
+  ["35","Gießen/Marburg",400,1500,2500,5500,10.0,14.0,89,95],
+  ["36","Fulda",200,700,1700,3800,7.5,11.0,84,90],
+  ["37","Göttingen",300,1000,2200,4800,9.0,13.0,87,93],
+  ["38","Braunschweig",300,1200,2500,5500,9.5,13.5,88,95],
+  ["39","Magdeburg",100,500,1200,3000,6.5,9.5,82,88],
+  ["40","Düsseldorf",1000,4000,4000,9000,12.0,17.0,93,99],
+  ["41","Mönchengl./Neuss",300,900,2000,4500,8.5,12.0,87,92],
+  ["42","Wuppertal",200,700,1800,4000,8.0,11.5,85,91],
+  ["44","Dortmund",250,900,1800,4500,8.5,12.5,86,92],
+  ["45","Essen",200,800,1700,4000,8.0,11.5,85,91],
+  ["46","Oberhausen/Wesel",150,600,1400,3500,7.5,10.5,84,89],
+  ["47","Krefeld/Duisburg",200,700,1700,4000,8.0,11.5,84,90],
+  ["48","Münster",700,2000,3500,7000,11.0,15.0,91,96],
+  ["49","Osnabrück",300,900,2200,4500,9.0,12.5,87,92],
+  ["50","Köln Nord/City",1200,3500,4000,8000,12.5,17.0,93,99],
+  ["51","Köln Ost",500,1500,2800,6000,10.5,14.5,89,95],
+  ["52","Aachen",400,1500,2500,5500,10.0,14.0,89,95],
+  ["53","Bonn",800,2500,3500,7500,12.0,16.5,92,98],
+  ["54","Trier",400,1200,2500,5000,9.5,13.5,88,94],
+  ["55","Mainz",800,2200,3800,7500,12.0,15.5,92,97],
+  ["56","Koblenz",300,1000,2000,4500,8.5,12.0,86,92],
+  ["57","Siegen",150,600,1500,3500,7.5,10.5,84,89],
+  ["58","Hagen",150,600,1500,3500,7.5,10.5,84,89],
+  ["59","Hamm/Soest",200,700,1700,3800,8.0,11.0,85,90],
+  ["60","Frankfurt City",2000,5000,7000,12000,15.0,21.0,97,103],
+  ["61","Frankfurt Umld.",800,2500,4000,8500,12.5,16.5,92,98],
+  ["63","Offenbach/Umld.",600,2000,3500,7000,12.0,15.5,91,97],
+  ["64","Darmstadt",700,2000,3800,7500,12.0,15.5,92,97],
+  ["65","Wiesbaden",800,2500,4000,8000,12.5,16.0,92,98],
+  ["66","Saarbrücken",200,800,1800,4200,8.0,11.5,85,91],
+  ["67","Ludwigshafen",300,1000,2200,5000,9.0,13.0,87,93],
+  ["68","Mannheim",500,1600,3000,6000,10.5,14.5,89,95],
+  ["69","Heidelberg",1000,3000,4500,9000,13.5,17.5,94,99],
+  ["70","Stuttgart City",2000,5000,7000,12000,15.0,20.0,96,102],
+  ["71","Stuttgart Umld.",600,2000,3800,8000,12.0,15.5,91,97],
+  ["72","Tübingen",700,2000,4000,8000,12.5,16.0,92,97],
+  ["73","Göppingen",400,1500,2800,6500,10.5,14.5,89,95],
+  ["74","Heilbronn",400,1300,2800,6000,10.0,14.0,89,94],
+  ["75","Pforzheim",300,1000,2500,5500,9.5,13.5,88,93],
+  ["76","Karlsruhe",700,2000,3800,7500,12.0,15.5,91,97],
+  ["77","Offenburg",400,1200,2800,6000,10.0,14.0,88,94],
+  ["78","Konstanz",700,2000,4000,8000,12.0,16.0,91,97],
+  ["79","Freiburg",900,2800,4500,9000,13.0,17.0,93,99],
+  ["80","München City",5000,12000,10000,16000,19.0,26.0,98,105],
+  ["81","München Ost",3000,8000,8000,13000,17.0,22.0,96,102],
+  ["82","Starnberg/MUC.S",2000,8000,7000,14000,15.0,22.0,95,103],
+  ["83","Rosenheim",800,3000,4500,9000,12.5,17.0,91,97],
+  ["84","Landshut",500,1500,3000,6500,10.0,14.0,88,94],
+  ["85","Erding/Ingolst.",800,3000,4500,9000,12.5,16.5,91,97],
+  ["86","Augsburg",700,2000,3800,7500,12.0,15.5,91,96],
+  ["87","Kempten/Allgäu",600,2000,3800,8000,11.5,15.5,90,96],
+  ["88","Ravensburg",700,2200,4000,8500,12.0,16.0,91,97],
+  ["89","Ulm",600,1800,3500,7000,11.0,15.0,90,96],
+  ["90","Nürnberg",700,2000,3500,7000,11.0,14.5,90,96],
+  ["91","Erlangen/Fürth",600,1800,3500,7500,11.0,15.0,90,96],
+  ["92","Amberg/Weiden",150,600,1500,3500,7.5,10.5,84,89],
+  ["93","Regensburg",700,2000,4000,7500,12.0,15.5,91,96],
+  ["94","Passau/Degg.",200,800,1800,4200,8.0,11.5,84,90],
+  ["95","Hof/Fichtelgeb.",80,400,800,2500,6.0,9.0,81,87],
+  ["96","Bamberg/Coburg",300,1000,2500,5500,9.5,13.5,87,93],
+  ["97","Würzburg",500,1500,3000,6500,10.0,14.0,88,94],
+  ["98","Suhl/Thür.Wald",60,300,700,2000,5.5,8.0,79,85],
+  ["99","Erfurt/Weimar",200,900,1800,4500,8.0,12.0,85,91]
+];
+
+const PLZ_PREFIX_MAP = {};
+PLZ_REGIONEN.forEach(r => { PLZ_PREFIX_MAP[r[0]] = r; });
+const PLZ_FALLBACK = ["00","Ländlich",60,300,700,2500,5.5,9.0,79,88];
+
+function hashPLZ(plz) {
+  let h = 0;
+  for (let i = 0; i < plz.length; i++) {
+    h = Math.imul(h, 31) + plz.charCodeAt(i) | 0;
+    h = h >>> 0;
+  }
+  return h;
+}
+
+function getPLZData(plz) {
+  if (!plz || plz.length !== 5) return null;
+  const r = PLZ_PREFIX_MAP[plz.slice(0,2)] || PLZ_FALLBACK;
+  const [pfx, label, brw_lo, brw_hi, kauf_lo, kauf_hi, miete_lo, miete_hi, kf_lo, kf_hi] = r;
+  const h = hashPLZ(plz);
+  const t_brw   = ((h >>> 0) & 0xFF) / 255;
+  const t_kauf_raw = ((h >>> 8) & 0xFF) / 255;
+  const t_miete_raw = ((h >>> 16) & 0xFF) / 255;
+  const t_kf    = ((h >>> 24) & 0xFF) / 255;
+  const t_kauf  = t_kauf_raw * 0.5 + t_brw * 0.5;
+  const t_miete = t_miete_raw * 0.5 + t_brw * 0.5;
+  const lerp = (a, b, t) => a + (b-a)*t;
+  return {
+    stadt: label,
+    brw:   Math.round(lerp(brw_lo, brw_hi, t_brw)),
+    kauf:  Math.round(lerp(kauf_lo, kauf_hi, t_kauf)),
+    miete: Math.round(lerp(miete_lo, miete_hi, t_miete) * 2) / 2,
+    kf:    Math.round(lerp(kf_lo, kf_hi, t_kf))
+  };
+}
+
+
+// =============================================
+// UI HELPERS
+// =============================================
+function toggleSection(id){document.getElementById(id).classList.toggle('open')}
+const tabBtns=document.querySelectorAll('.rtab');
+const tabPanels=document.querySelectorAll('.rtab-panel');
+function showTab(i){
+  tabBtns.forEach((b,j)=>b.classList.toggle('active',i===j));
+  tabPanels.forEach((p,j)=>p.classList.toggle('active',i===j));
+}
+function eur(n){return n.toLocaleString('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0})}
+function pct(n){return (n>=0?'+':'')+n.toFixed(1)+'%'}
+function gv(id){return parseFloat(document.getElementById(id).value)||0}
+function gs(id){const e=document.getElementById(id);return e?e.value:''}
+function gc(id){return document.getElementById(id).checked}
+
+// =============================================
+// PLZ CHANGE
+// =============================================
+function onPLZChange(){
+  const plz=document.getElementById('plz').value.trim();
+  const info=document.getElementById('plz_info');
+  if(plz.length===5&&/^\d{5}$/.test(plz)){
+    const d=getPLZData(plz);
+    if(d){
+      document.getElementById('bodenrichtwert').value=d.brw;
+      document.getElementById('marktpreis_qm').value=d.kauf;
+      document.getElementById('miete_qm').value=d.miete;
+      document.getElementById('kaufkraft').value=d.kf;
+      if(!document.getElementById('stadt').value.trim())
+        document.getElementById('stadt').value=d.stadt;
+      info.className='plz-info plz-ok';
+      info.innerHTML=`<strong>✓ PLZ ${plz} erkannt – ${d.stadt}</strong><div class="plz-chips">
+        <span class="plz-chip">BRW ${d.brw.toLocaleString('de-DE')} €/m²</span>
+        <span class="plz-chip">Kauf Ø ${d.kauf.toLocaleString('de-DE')} €/m²</span>
+        <span class="plz-chip">Miete ${d.miete} €/m²</span>
+        <span class="plz-chip">Kaufkraft ${d.kf}</span>
+      </div>`;
+    }
+  } else if(plz.length>0&&plz.length<5){
+    info.className='plz-info plz-idle';
+    info.textContent='Bitte vollständige 5-stellige PLZ eingeben…';
+  } else if(plz.length===0){
+    info.className='plz-info plz-idle';
+    info.textContent='Bitte 5-stellige PLZ eingeben – alle deutschen PLZ (01000–99999) werden unterstützt.';
+  }
+}
+
+// =============================================
+// BEWERTUNGSMODELL
+// =============================================
+function berechnen(){
+  const wfl=gv('wohnflaeche');
+  const bj=gv('baujahr');
+  if(!wfl||!bj){alert('Bitte mindestens Wohnfläche (*) und Baujahr (*) angeben.');return;}
+
+  const nutz=gv('nutzflaeche');
+  const gfl=gv('grundstueck');
+  const zustand=gv('zustand');
+  const typ=gs('gebaeude_typ');
+  const etage=gs('etage');
+  const ausrichtung=gs('ausrichtung');
+  const renovJahr=gv('renovierung');
+
+  const brw=gv('bodenrichtwert')||500;
+  const markt_qm=gv('marktpreis_qm')||(brw*2.8);
+  const miete_qm=gv('miete_qm')||(markt_qm/200);
+  const leerstand=gv('leerstand')/100;
+
+  const now=2025;
+  const alter=now-bj;
+  const eff_alter=renovJahr?Math.min(alter,Math.round((now-renovJahr)*0.35+(renovJahr-bj)*0.5)):alter;
+  const rnd=Math.max(10,80-eff_alter);
+
+  const factors=[];
+
+  // Lage
+  const mikoMap={sehr_gut:1.08,gut:1.0,mittel:0.93,einfach:0.85,schlecht:0.78};
+  const makoMap={innenstadt:1.12,innenstadtrand:1.04,stadtrand:1.0,laendlich:0.88};
+  const oepnvMap={sehr_gut:1.04,gut:1.0,mittel:0.97,schlecht:0.93};
+  const laermMap={sehr_ruhig:1.04,ruhig:1.0,mittel:0.97,laut:0.93,sehr_laut:0.88};
+  const lage_f=(mikoMap[gs('mikrolage')]||1)*(makoMap[gs('makrolage')]||1)*(oepnvMap[gs('oepnv')]||1)*(laermMap[gs('laerm')]||1);
+  factors.push({n:'Lagebewertung (kombiniert)',v:(lage_f-1)*100});
+
+  // Zustand
+  const zustand_f=0.75+(zustand-1)/9*0.4;
+  factors.push({n:`Objektzustand (${zustand}/10)`,v:(zustand_f-1)*100});
+
+  // Alter
+  const alter_f=0.75+Math.min(rnd/80,1)*0.35;
+  factors.push({n:`Alter · Restnutzungsdauer ${rnd} J.`,v:(alter_f-1)*100});
+
+  // Etage
+  const etageMap={eg:0.96,ug:0.88,'1og':1.0,'2og':1.02,'3og':1.01,dg:0.99};
+  const et_f=etageMap[etage]||1.0;
+  if(et_f!==1.0) factors.push({n:`Etage (${etage})`,v:(et_f-1)*100});
+
+  // Ausrichtung
+  const ausMap={sued:1.03,suedwest:1.02,suedost:1.02,ost:1.0,west:0.99,nord:0.96};
+  const a_f=ausMap[ausrichtung]||1.0;
+  if(a_f!==1.0) factors.push({n:`Ausrichtung (${ausrichtung})`,v:(a_f-1)*100});
+
+  // Ausstattung
+  let aust_bonus=0;
+  const feats=[['feat_aufzug',1.5],['feat_garage',2],['feat_balkon',1.5],['feat_garten',2],
+               ['feat_einbaukueche',1],['feat_fussboden',1.5],['feat_barrierefrei',1],
+               ['feat_photovoltaik',2],['feat_waermepumpe',2],['feat_fussbodenheizung',1.5],['feat_sicherheit',0.5]];
+  feats.forEach(([id,w])=>{if(gc(id))aust_bonus+=w;});
+  if(aust_bonus>0) factors.push({n:'Ausstattungsmerkmale',v:aust_bonus});
+  const aust_f=1+aust_bonus/100;
+
+  // Energie
+  const ekMap={'Ap':1.05,'A':1.03,'B':1.01,'C':1.0,'D':0.99,'E':0.97,'F':0.94,'G':0.91,'H':0.88};
+  const ek=gs('energie_klasse');
+  const ek_f=ekMap[ek]||1.0;
+  if(ek&&ek_f!==1.0) factors.push({n:`Energieeffizienz (${ek})`,v:(ek_f-1)*100});
+
+  // Heizung
+  const hzMap={waermepumpe:1.03,fernwaerme:1.01,gas:1.0,oel:0.97,pellet:1.01,elektro:0.95,nachtspeicher:0.92};
+  const h_f=hzMap[gs('heizung')]||1.0;
+  const hza=gv('heizung_alter');
+  const hza_f=hza>20?0.97:hza>10?0.99:1.0;
+  if(h_f!==1.0) factors.push({n:'Heizungsart',v:(h_f-1)*100});
+
+  // Dämmung
+  const dmMap={sehr_gut:1.03,gut:1.01,mittel:1.0,einfach:0.97,kein:0.93};
+  const d_f=dmMap[gs('daemmung')]||1.0;
+  if(d_f!==1.0) factors.push({n:'Dämmstandard',v:(d_f-1)*100});
+
+  // Rechtliches
+  let recht_f=1.0;
+  if(gc('rec_denkmal')){recht_f*=0.97;factors.push({n:'Denkmalschutz',v:-3});}
+  if(gc('rec_erbbau')){recht_f*=0.90;factors.push({n:'Erbbaurecht',v:-10});}
+  if(gc('rec_wohnrecht')){recht_f*=0.92;factors.push({n:'Wohnrecht / Nießbrauch',v:-8});}
+  if(gc('rec_sangebiet')){recht_f*=1.02;factors.push({n:'Sanierungsgebiet (Förderung)',v:2});}
+
+  // Vermietung
+  const vermMap={leer:1.0,vermietet_markt:0.97,vermietet_unter:0.92,sozialmietwohnung:0.85};
+  const v_f=vermMap[gs('vermietung')]||1.0;
+  if(v_f!==1.0) factors.push({n:'Vermietungssituation',v:(v_f-1)*100});
+
+  // Markttrend
+  const trendMap={stark_steigend:1.04,steigend:1.02,stabil:1.0,fallend:0.97};
+  const tr_f=trendMap[gs('markttrend')]||1.0;
+  factors.push({n:'Markttrend Region',v:(tr_f-1)*100});
+
+  // Kaufkraft & Bevölkerung
+  const kk=gv('kaufkraft')||100;
+  const kk_f=0.85+kk/100*0.15;
+  const bevMap={stark_wachsend:1.04,wachsend:1.02,stabil:1.0,schrumpfend:0.93};
+  const bv_f=bevMap[gs('bevoelkerung')]||1.0;
+  factors.push({n:'Kaufkraft & Bevölkerung',v:((kk_f*bv_f)-1)*100});
+
+  // Arbeitslosigkeit
+  const al=gv('arbeitslos')||5;
+  const al_f=Math.max(0.9,1-(al-5)*0.01);
+
+  // Gesamtfaktor
+  const ges_f=lage_f*zustand_f*alter_f*et_f*a_f*aust_f*ek_f*h_f*hza_f*d_f*recht_f*v_f*tr_f*al_f*(kk_f*bv_f);
+
+  // Kapitalisierungszins
+  const bauzins=gv('bauzins')||3.8;
+  const kap_zins=Math.max(2,bauzins*0.5+2.5);
+
+  // 1. Vergleichswert
+  const vw=markt_qm*wfl*ges_f;
+
+  // 2. Ertragswert
+  const jahreskalt=miete_qm*wfl*12;
+  const bwirt=jahreskalt*(gfl>0?0.22:0.28);
+  const reinertrag=jahreskalt*(1-leerstand)-bwirt;
+  const kap_fak=kap_zins>0?(1-Math.pow(1+kap_zins/100,-rnd))/(kap_zins/100):rnd;
+  const boden_ew=brw*Math.max(gfl,wfl*0.15);
+  const ew=reinertrag*kap_fak+boden_ew;
+
+  // 3. Sachwert
+  const hk_qm_base=typ==='ETW'?1850:typ==='EFH'||typ==='Villa'?2100:1800;
+  const hk_qm=hk_qm_base*(d_f*0.5+0.5);
+  const altMind=Math.min(0.7,eff_alter*0.012);
+  const geb_sw=wfl*hk_qm*(1-altMind)*zustand_f;
+  const bod_sw=brw*(gfl>0?gfl:wfl*0.12);
+  const sw=geb_sw+bod_sw+(nutz*380*(1-altMind));
+
+  // Gewichtung je Typ
+  let wVW=0.50,wEW=0.30,wSW=0.20;
+  if(typ==='MFH'){wVW=0.35;wEW=0.45;wSW=0.20;}
+  if(['EFH','Villa','DHH','RH','Bungalow'].includes(typ)){wVW=0.50;wEW=0.20;wSW=0.30;}
+
+  const mw=vw*wVW+ew*wEW+sw*wSW;
+  const mw_min=mw*0.88;
+  const mw_max=mw*1.12;
+  const mw_qm=mw/wfl;
+  const boden_ant=(brw*(gfl||wfl*0.1))/mw*100;
+  const brutto_r=(jahreskalt/mw)*100;
+  const kpf=mw/jahreskalt;
+
+  // Ampel
+  const ratio=mw_qm/markt_qm;
+  const [aCls,aTxt]=ratio<0.9?['ampel-green','Günstig bewertet']:ratio<1.1?['ampel-yellow','Marktgerecht']:['ampel-red','Über Marktniveau'];
+
+  // OUTPUT
+  document.getElementById('res_main').textContent=eur(mw);
+  document.getElementById('res_range').textContent=eur(mw_min)+' – '+eur(mw_max);
+  document.getElementById('res_qm').textContent=eur(mw_qm)+'/m²';
+  document.getElementById('res_boden').textContent=boden_ant.toFixed(1)+'%';
+  document.getElementById('res_rendite').textContent=brutto_r.toFixed(2)+'% p.a.';
+  document.getElementById('res_kpf').textContent=kpf.toFixed(1)+'x Jahresmiete';
+  document.getElementById('res_ampel').innerHTML=`<div class="result-ampel ${aCls}"><div class="ampel-dot"></div>${aTxt}</div>`;
+
+  const maxV=Math.max(vw,ew,sw);
+  document.getElementById('verfahren_grid').innerHTML=[
+    {name:'Vergleichswertverfahren',w:Math.round(wVW*100),val:vw},
+    {name:'Ertragswertverfahren',w:Math.round(wEW*100),val:ew},
+    {name:'Sachwertverfahren',w:Math.round(wSW*100),val:sw},
+  ].map(v=>`<div class="verfahren-item">
+    <div class="verfahren-top"><span class="verfahren-name">${v.name}</span><span class="verfahren-weight">Gewicht: ${v.w}%</span></div>
+    <div class="verfahren-val">${eur(v.val)}</div>
+    <div class="verfahren-bar"><div class="verfahren-fill" style="width:${Math.round(v.val/maxV*100)}%"></div></div>
+  </div>`).join('');
+
+  document.getElementById('factors_list').innerHTML=
+    [...factors].sort((a,b)=>Math.abs(b.v)-Math.abs(a.v))
+    .map(f=>`<div class="factor-row">
+      <span class="factor-name">${f.n}</span>
+      <span class="factor-val ${f.v>=0?'factor-pos':'factor-neg'}">${f.v>=0?'+':''}${f.v.toFixed(1)}%</span>
+    </div>`).join('');
+
+  const ap=gv('angebotspreis');
+  if(ap>0){
+    const dp=(ap-mw)/mw*100;
+    document.getElementById('res_diff').textContent=pct(dp)+' ('+eur(ap-mw)+')';
+    document.getElementById('res_diff').className='factor-val '+(dp>5?'factor-neg':dp<-5?'factor-pos':'factor-neu');
+    document.getElementById('row_angebot').style.display='flex';
+  }
+
+  document.getElementById('panel_placeholder').style.display='none';
+  const pr=document.getElementById('panel_result');
+  pr.classList.remove('result-hidden');
+  pr.style.display='block';
+  showTab(0);
+  if(window.innerWidth<820) document.querySelector('.panel-wrap').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
