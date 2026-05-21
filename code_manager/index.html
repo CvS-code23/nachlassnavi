@@ -55,7 +55,7 @@ body{font-family:Arial,sans-serif;background:#f4f4f0;color:#444;min-height:100vh
 .btn-gold{background:#b8952a;color:white}.btn-gold:hover{background:#0d2560}
 .btn-danger{background:white;color:#c0392b;border:1px solid #f5c6c0;font-size:12px;padding:.35rem .7rem}.btn-danger:hover{background:#fdf0ee}
 .btn-sm{background:#f4f4f0;color:#444;border:1px solid #ddd;font-size:12px;padding:.35rem .7rem;font-weight:normal}.btn-sm:hover{background:#e8e8e0}
-.new-code-form{display:grid;grid-template-columns:1fr 1fr auto auto;gap:.75rem;align-items:end}
+.new-code-form{display:grid;grid-template-columns:auto 1fr 1fr auto auto;gap:.75rem;align-items:end}
 .field{display:flex;flex-direction:column;gap:.3rem}
 .field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888}
 .field input{padding:.55rem .8rem;border:1px solid #ccc;border-radius:5px;font-size:14px;font-family:Arial,sans-serif}
@@ -117,6 +117,14 @@ tr:last-child td{border-bottom:none}
   <div class="card">
     <div class="card-title">Neuen Zugangscode erstellen</div>
     <div class="new-code-form">
+      <div class="field">
+        <label>Anrede</label>
+        <select id="new-salutation" style="padding:.55rem .8rem;border:1px solid #ccc;border-radius:5px;font-size:14px;font-family:Arial,sans-serif;background:white">
+          <option value="">–</option>
+          <option value="Herr">Herr</option>
+          <option value="Frau">Frau</option>
+        </select>
+      </div>
       <div class="field">
         <label>Mandant / Name</label>
         <input type="text" id="new-client" placeholder="z.B. Wegner, Thomas">
@@ -200,6 +208,7 @@ function genCode(){
 }
 
 function addCode(){
+  const salutation = document.getElementById('new-salutation').value;
   const client = (document.getElementById('new-client').value || '').trim();
   const code   = (document.getElementById('new-code').value || '').trim().toUpperCase();
   if(!client){ alert('Bitte einen Mandantennamen eingeben.'); return; }
@@ -207,12 +216,10 @@ function addCode(){
   if(codes.find(c => c.code.toUpperCase() === code)){ alert('Dieser Code existiert bereits.'); return; }
   const today  = new Date();
   const expires = new Date(today); expires.setDate(expires.getDate() + 7);
-  codes.push({
-    code,
-    client,
-    created: today.toISOString().split('T')[0],
-    expires: expires.toISOString().split('T')[0]
-  });
+  const entry = { code, client, created: today.toISOString().split('T')[0], expires: expires.toISOString().split('T')[0] };
+  if(salutation) entry.salutation = salutation;
+  codes.push(entry);
+  document.getElementById('new-salutation').value = '';
   document.getElementById('new-client').value = '';
   document.getElementById('new-code').value = '';
   renderTable();
@@ -248,7 +255,7 @@ function renderTable(){
       badge = `<span class="badge badge-ok">Aktiv – noch ${d} Tage</span>`; status = 'ok';
     }
     return `<tr style="${status==='exp'?'opacity:.5':''}">
-      <td>${escHtml(c.client)}</td>
+      <td>${c.salutation ? escHtml(c.salutation)+' ' : ''}${escHtml(c.client)}</td>
       <td><span class="code-val" onclick="copyCode('${escHtml(c.code)}')" title="Klicken zum Kopieren" style="cursor:pointer">${escHtml(c.code)}</span></td>
       <td>${c.created}</td>
       <td>${c.expires}</td>
