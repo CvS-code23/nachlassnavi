@@ -29,6 +29,12 @@
       "client": "Emil Detektiv",
       "created": "2026-05-21",
       "expires": "2026-05-28"
+    },
+    {
+      "code": "NP-AAAVVN",
+      "client": "Frodo Beutlin",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
     }
   ]
 }
