@@ -1113,14 +1113,24 @@ async function gateLoadCodes(){
 function gateSubmit(){
   const v = (document.getElementById('gate-code').value||'').trim().toUpperCase();
   if(v === ADMIN_CODE.toUpperCase()){ openAdminPanel(); return; }
-  const codes = (npCodes||[FALLBACK_CODE]).map(c=>c.toUpperCase());
-  if(codes.includes(v)){
+  const now = new Date();
+  const list = npCodes || [FALLBACK_CODE];
+  const valid = list.filter(c => {
+    if(typeof c === 'string') return true;
+    return !c.expires || new Date(c.expires) >= now;
+  });
+  const codeValues = valid.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
+  if(codeValues.includes(v)){
     sessionStorage.setItem('np_auth','1');
     const g = document.getElementById('np-gate');
     if(g) g.remove();
   } else {
     const err = document.getElementById('gate-err');
-    if(err){ err.textContent = 'Ungültiger Zugangscode. Bitte erneut versuchen.'; }
+    const allCodes = list.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
+    const msg = allCodes.includes(v)
+      ? 'Dieser Zugangscode ist abgelaufen. Bitte einen neuen Code anfordern.'
+      : 'Ungültiger Zugangscode. Bitte erneut versuchen.';
+    if(err) err.textContent = msg;
     const inp = document.getElementById('gate-code');
     if(inp){ inp.value=''; inp.focus(); }
   }
