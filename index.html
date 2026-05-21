@@ -252,7 +252,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <label class="gate-label" for="gate-code">Zugangscode</label>
     <input class="gate-input" id="gate-code" type="password" placeholder="••••••••" autocomplete="off"
       onkeydown="if(event.key==='Enter')gateSubmit()">
-    <button class="gate-btn" onclick="gateSubmit()">Zugang bestätigen</button>
+    <button class="gate-btn" id="gate-btn" onclick="gateSubmit()">Zugang bestätigen</button>
     <div class="gate-err" id="gate-err"></div>
     <div class="gate-hint">Kein Zugang? Bitte wenden Sie sich an die Kanzlei.</div>
   </div>
@@ -1116,16 +1116,24 @@ async function gateLoadCodes(){
   npCodes = [FALLBACK_CODE];
 }
 
+let npCodesReady = false;
+
 (function(){
   if(sessionStorage.getItem('np_auth')==='1'){
     const g = document.getElementById('np-gate');
     if(g) g.remove();
   } else {
-    gateLoadCodes();
+    const btn = document.getElementById('gate-btn');
+    if(btn){ btn.disabled=true; btn.textContent='Wird geladen …'; }
+    gateLoadCodes().then(()=>{
+      npCodesReady = true;
+      if(btn){ btn.disabled=false; btn.textContent='Zugang bestätigen'; }
+    });
   }
 })();
 
-function gateSubmit(){
+async function gateSubmit(){
+  if(!npCodesReady) await gateLoadCodes().then(()=>{ npCodesReady=true; });
   const v = (document.getElementById('gate-code').value||'').trim().toUpperCase();
   if(v === ADMIN_CODE.toUpperCase()){ openAdminPanel(); return; }
   const now = new Date();
