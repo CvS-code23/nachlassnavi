@@ -1102,7 +1102,7 @@ async function gateLoadCodes(){
   try{
     const r = await fetch(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,
-      {headers:hdrs}
+      {headers:hdrs, cache:'no-store'}
     );
     if(r.ok){
       const meta = await r.json();
