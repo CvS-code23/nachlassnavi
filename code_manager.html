@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nachlasspilot – Zugangscode-Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f4f0;color:#444;min-height:100vh}
+.header{background:#0d2560;color:white;padding:1.2rem 2rem;display:flex;align-items:center;gap:1rem}
+.header h1{font-family:'Palatino Linotype',Palatino,Georgia,serif;font-size:1.4rem;font-weight:normal;letter-spacing:.05em}
+.header-sub{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-top:.15rem}
+.main{max-width:860px;margin:2rem auto;padding:0 1.5rem}
+.card{background:white;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:1.5rem;margin-bottom:1.5rem}
+.card-title{font-family:'Palatino Linotype',Palatino,Georgia,serif;font-size:1.1rem;color:#0d2560;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:2px solid #b8952a}
+.token-row{display:flex;gap:.75rem;align-items:center}
+.token-row input{flex:1;padding:.55rem .8rem;border:1px solid #ccc;border-radius:5px;font-size:13px;font-family:monospace}
+.token-row input:focus{outline:none;border-color:#0d2560}
+.btn{padding:.55rem 1.1rem;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;transition:background .15s;white-space:nowrap}
+.btn-primary{background:#0d2560;color:white}.btn-primary:hover{background:#b8952a}
+.btn-gold{background:#b8952a;color:white}.btn-gold:hover{background:#0d2560}
+.btn-danger{background:white;color:#c0392b;border:1px solid #f5c6c0;font-size:12px;padding:.35rem .7rem}.btn-danger:hover{background:#fdf0ee}
+.btn-sm{background:#f4f4f0;color:#444;border:1px solid #ddd;font-size:12px;padding:.35rem .7rem;font-weight:normal}.btn-sm:hover{background:#e8e8e0}
+.new-code-form{display:grid;grid-template-columns:1fr 1fr auto auto;gap:.75rem;align-items:end}
+.field{display:flex;flex-direction:column;gap:.3rem}
+.field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888}
+.field input{padding:.55rem .8rem;border:1px solid #ccc;border-radius:5px;font-size:14px;font-family:Arial,sans-serif}
+.field input:focus{outline:none;border-color:#0d2560}
+.code-input{font-family:monospace;letter-spacing:.1em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#f8f7f4}
+th{text-align:left;padding:.6rem .8rem;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;font-weight:600;border-bottom:2px solid #eee}
+td{padding:.7rem .8rem;border-bottom:1px solid #f0efeb;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ok{background:#e8f5ee;color:#2d7a4f}
+.badge-warn{background:#fef9e7;color:#b8860b}
+.badge-exp{background:#fdf0ee;color:#c0392b}
+.code-val{font-family:monospace;font-size:13px;font-weight:600;color:#0d2560;letter-spacing:.08em}
+.save-bar{display:flex;align-items:center;gap:1rem}
+.msg{font-size:13px;min-height:18px}
+.msg-ok{color:#2d7a4f}.msg-err{color:#c0392b}.msg-info{color:#b8860b}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+@media(max-width:640px){.new-code-form{grid-template-columns:1fr 1fr;}.new-code-form .btn{margin-top:.5rem}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="h1">
+      <h1>Nachlasspilot – Zugangscode-Manager</h1>
+    </div>
+    <div class="header-sub">Kanzlei von Schoenebeck · Intern</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- GitHub Token -->
+  <div class="card">
+    <div class="card-title">GitHub-Verbindung</div>
+    <div class="token-row">
+      <input type="password" id="gh-token" placeholder="GitHub Token (github_pat_...)" oninput="saveToken()">
+      <button class="btn btn-primary" onclick="loadCodes()">Codes laden</button>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-top:.5rem">Das Token wird nur lokal in diesem Browser gespeichert und nicht übertragen.</div>
+  </div>
+
+  <!-- Neuer Code -->
+  <div class="card">
+    <div class="card-title">Neuen Zugangscode erstellen</div>
+    <div class="new-code-form">
+      <div class="field">
+        <label>Mandant / Name</label>
+        <input type="text" id="new-client" placeholder="z.B. Wegner, Thomas">
+      </div>
+      <div class="field">
+        <label>Code</label>
+        <input type="text" id="new-code" class="code-input" placeholder="NP-XXXXXX" maxlength="20">
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn btn-sm" onclick="genCode()">🎲 Zufällig</button>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn btn-gold" onclick="addCode()">+ Hinzufügen</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-top:.75rem">Gültigkeit: 7 Tage ab heute. Danach muss ein neuer Code vergeben werden.</div>
+  </div>
+
+  <!-- Code-Liste -->
+  <div class="card">
+    <div class="card-title">Aktive Zugangscodes</div>
+    <div id="codes-table-wrap">
+      <div class="empty">Bitte zuerst Codes laden (Token eingeben → „Codes laden").</div>
+    </div>
+    <div style="margin-top:1.2rem" class="save-bar">
+      <button class="btn btn-gold" onclick="saveCodes()" style="min-width:220px">💾 Speichern &amp; auf GitHub veröffentlichen</button>
+      <div class="msg" id="save-msg"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const OWNER = 'CvS-code23';
+const REPO  = 'nachlasspilot';
+let codes = [];
+
+window.addEventListener('load', () => {
+  const t = localStorage.getItem('np_cm_token') || '';
+  if(t) document.getElementById('gh-token').value = t;
+});
+
+function saveToken(){
+  localStorage.setItem('np_cm_token', document.getElementById('gh-token').value);
+}
+
+function getToken(){ return (document.getElementById('gh-token').value || '').trim(); }
+
+function genCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = 'NP-';
+  for(let i=0;i<6;i++) c += chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('new-code').value = c;
+}
+
+function addCode(){
+  const client = (document.getElementById('new-client').value || '').trim();
+  const code   = (document.getElementById('new-code').value || '').trim().toUpperCase();
+  if(!client){ alert('Bitte einen Mandantennamen eingeben.'); return; }
+  if(!code || code.length < 4){ alert('Bitte einen Code eingeben (mind. 4 Zeichen).'); return; }
+  if(codes.find(c => c.code.toUpperCase() === code)){ alert('Dieser Code existiert bereits.'); return; }
+  const today  = new Date();
+  const expires = new Date(today); expires.setDate(expires.getDate() + 7);
+  codes.push({
+    code,
+    client,
+    created: today.toISOString().split('T')[0],
+    expires: expires.toISOString().split('T')[0]
+  });
+  document.getElementById('new-client').value = '';
+  document.getElementById('new-code').value = '';
+  renderTable();
+  setMsg('Code hinzugefügt – bitte speichern!', 'warn');
+}
+
+function removeCode(code){
+  if(!confirm(`Code „${code}" wirklich löschen?`)) return;
+  codes = codes.filter(c => c.code !== code);
+  renderTable();
+  setMsg('Code gelöscht – bitte speichern!', 'warn');
+}
+
+function daysLeft(expires){
+  const diff = new Date(expires) - new Date();
+  return Math.ceil(diff / 86400000);
+}
+
+function renderTable(){
+  const wrap = document.getElementById('codes-table-wrap');
+  if(!codes.length){
+    wrap.innerHTML = '<div class="empty">Keine Codes vorhanden.</div>';
+    return;
+  }
+  const rows = codes.map(c => {
+    const d = daysLeft(c.expires);
+    let badge, status;
+    if(d < 0){
+      badge = '<span class="badge badge-exp">Abgelaufen</span>'; status = 'exp';
+    } else if(d <= 2){
+      badge = `<span class="badge badge-warn">Läuft ab in ${d} Tag${d===1?'':'en'}</span>`; status = 'warn';
+    } else {
+      badge = `<span class="badge badge-ok">Aktiv – noch ${d} Tage</span>`; status = 'ok';
+    }
+    return `<tr style="${status==='exp'?'opacity:.5':''}">
+      <td>${escHtml(c.client)}</td>
+      <td><span class="code-val">${escHtml(c.code)}</span></td>
+      <td>${c.created}</td>
+      <td>${c.expires}</td>
+      <td>${badge}</td>
+      <td><button class="btn btn-danger" onclick="removeCode('${escHtml(c.code)}')">Löschen</button></td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table>
+    <thead><tr>
+      <th>Mandant</th><th>Code</th><th>Erstellt</th><th>Läuft ab</th><th>Status</th><th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+async function loadCodes(){
+  const token = getToken();
+  if(!token){ alert('Bitte zuerst ein GitHub Token eingeben.'); return; }
+  setMsg('Lade Codes von GitHub…', 'info');
+  try{
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/codes.json`,{
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    const content = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    // Normalize: support both old string format and new object format
+    codes = (content.codes || []).map(c =>
+      typeof c === 'string'
+        ? {code:c, client:'(unbekannt)', created:'', expires:'2099-12-31'}
+        : c
+    );
+    renderTable();
+    setMsg(`✓ ${codes.length} Code(s) geladen.`, 'ok');
+  } catch(e){
+    setMsg('Fehler: '+e.message, 'err');
+  }
+}
+
+async function saveCodes(){
+  const token = getToken();
+  if(!token){ setMsg('Bitte zuerst ein GitHub Token eingeben.', 'err'); return; }
+  setMsg('Wird gespeichert…', 'info');
+  try{
+    // Get current SHA
+    const getR = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/codes.json`,{
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    let sha = '';
+    if(getR.ok){ const d = await getR.json(); sha = d.sha || ''; }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify({codes}, null, 2))));
+    const body = {message:'Zugangscodes aktualisiert', content};
+    if(sha) body.sha = sha;
+    const putR = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/codes.json`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(putR.ok){
+      setMsg('✓ Gespeichert! Codes sind sofort aktiv.', 'ok');
+    } else {
+      const err = await putR.json();
+      setMsg('Fehler: '+(err.message||putR.status), 'err');
+    }
+  } catch(e){ setMsg('Netzwerkfehler: '+e.message, 'err'); }
+}
+
+function setMsg(msg, type){
+  const el = document.getElementById('save-msg');
+  el.textContent = msg;
+  el.className = 'msg' + (type==='ok'?' msg-ok':type==='err'?' msg-err':' msg-info');
+}
+
+// Load on start if token present
+window.addEventListener('load', () => {
+  if(getToken()) setTimeout(loadCodes, 300);
+});
+</script>
+</body>
+</html>
