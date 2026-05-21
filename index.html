@@ -1093,27 +1093,34 @@ const GITHUB_REPO   = 'nachlasspilot';
 let npCodes = null;
 
 async function gateLoadCodes(){
-  // GitHub API liefert immer den aktuellen Stand (kein CDN-Cache)
+  // Token aus Code-Manager (gleicher localStorage bei file://)
+  const tok = localStorage.getItem('np_cm_token')||'';
+  const hdrs = {'Accept':'application/vnd.github.v3+json'};
+  if(tok) hdrs['Authorization']='token '+tok;
+
+  // 1. GitHub API (immer aktuell, kein CDN-Cache)
   try{
     const r = await fetch(
       `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,
-      {headers:{'Accept':'application/vnd.github.v3+json','Cache-Control':'no-cache'}}
+      {headers:hdrs}
     );
     if(r.ok){
       const meta = await r.json();
-      const d = JSON.parse(atob(meta.content.replace(/\n/g,'')));
-      if(Array.isArray(d.codes) && d.codes.length){ npCodes = d.codes; return; }
+      const d = JSON.parse(atob(meta.content.replace(/\s/g,'')));
+      if(Array.isArray(d.codes)&&d.codes.length){npCodes=d.codes;return;}
     }
   }catch(e){}
-  // Fallback: relative URL (funktioniert auf GitHub Pages)
+
+  // 2. Fallback: relative URL (GitHub Pages)
   try{
     const r = await fetch(`./codes.json?t=${Date.now()}`);
     if(r.ok){
       const d = await r.json();
-      if(Array.isArray(d.codes) && d.codes.length){ npCodes = d.codes; return; }
+      if(Array.isArray(d.codes)&&d.codes.length){npCodes=d.codes;return;}
     }
   }catch(e){}
-  npCodes = [FALLBACK_CODE];
+
+  npCodes=[FALLBACK_CODE];
 }
 
 let npCodesReady = false;
@@ -1150,9 +1157,10 @@ async function gateSubmit(){
   } else {
     const err = document.getElementById('gate-err');
     const allCodes = list.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
-    const msg = allCodes.includes(v)
+    const isExpired = allCodes.includes(v);
+    const msg = isExpired
       ? 'Dieser Zugangscode ist abgelaufen. Bitte einen neuen Code anfordern.'
-      : 'Ungültiger Zugangscode. Bitte erneut versuchen.';
+      : `Ungültiger Code. (${list.length} Code${list.length!==1?'s':''} geladen)`;
     if(err) err.textContent = msg;
     const inp = document.getElementById('gate-code');
     if(inp){ inp.value=''; inp.focus(); }
