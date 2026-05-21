@@ -292,6 +292,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
       <span class="modal-name">Nachlasspilot</span>
     </div>
     <h2>Willkommen beim Nachlassverzeichnis</h2>
+    <p id="np-modal-greeting" style="display:none;font-weight:600;font-size:1.05rem;color:#0d2560;margin-top:-.2rem;margin-bottom:.1rem"></p>
     <p>Mit dieser Anwendung erstellen Sie ein vollständiges, formales Nachlassverzeichnis – mit Immobilienbewertung, Bankguthaben, Wertpapieren, Fahrzeugen und allen weiteren Vermögensgegenständen.</p>
     <p>Am Ende exportieren Sie ein PDF-Dokument, das Ihrer Anwältin oder dem Gericht vorgelegt werden kann.</p>
     <div class="modal-notice">
@@ -1129,8 +1130,12 @@ let npCodesReady = false;
 function showGreeting(){
   const name = sessionStorage.getItem('np_client') || '';
   if(!name) return;
+  const sal = sessionStorage.getItem('np_salutation') || '';
+  const salPrefix = sal ? sal + ' ' : '';
   const el = document.getElementById('np-greeting');
-  if(el){ el.textContent = 'Willkommen, ' + name; el.style.display = 'inline'; }
+  if(el){ el.textContent = 'Willkommen, ' + salPrefix + name; el.style.display = 'inline'; }
+  const mg = document.getElementById('np-modal-greeting');
+  if(mg){ mg.textContent = 'Hallo, ' + salPrefix + name + '! Willkommen beim Nachlasspiloten!'; mg.style.display = 'block'; }
 }
 
 (function(){
@@ -1164,7 +1169,9 @@ async function gateSubmit(){
     const matchIdx = codeValues.indexOf(v);
     const matchEntry = valid[matchIdx];
     const clientName = (typeof matchEntry === 'object' && matchEntry.client) ? matchEntry.client : '';
+    const salutation = (typeof matchEntry === 'object' && matchEntry.salutation) ? matchEntry.salutation : '';
     if(clientName) sessionStorage.setItem('np_client', clientName);
+    if(salutation) sessionStorage.setItem('np_salutation', salutation); else sessionStorage.removeItem('np_salutation');
     showGreeting();
     const g = document.getElementById('np-gate');
     if(g) g.remove();
