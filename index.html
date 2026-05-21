@@ -1093,18 +1093,26 @@ const GITHUB_REPO   = 'nachlasspilot';
 let npCodes = null;
 
 async function gateLoadCodes(){
-  const urls = [
-    `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/codes.json?t=${Date.now()}`,
-    `./codes.json?t=${Date.now()}`
-  ];
-  for(const url of urls){
-    try{
-      const r = await fetch(url);
-      if(!r.ok) continue;
+  // GitHub API liefert immer den aktuellen Stand (kein CDN-Cache)
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,
+      {headers:{'Accept':'application/vnd.github.v3+json','Cache-Control':'no-cache'}}
+    );
+    if(r.ok){
+      const meta = await r.json();
+      const d = JSON.parse(atob(meta.content.replace(/\n/g,'')));
+      if(Array.isArray(d.codes) && d.codes.length){ npCodes = d.codes; return; }
+    }
+  }catch(e){}
+  // Fallback: relative URL (funktioniert auf GitHub Pages)
+  try{
+    const r = await fetch(`./codes.json?t=${Date.now()}`);
+    if(r.ok){
       const d = await r.json();
       if(Array.isArray(d.codes) && d.codes.length){ npCodes = d.codes; return; }
-    }catch(e){}
-  }
+    }
+  }catch(e){}
   npCodes = [FALLBACK_CODE];
 }
 
