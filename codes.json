@@ -23,6 +23,12 @@
       "client": "Mara Musterfrau",
       "created": "2026-05-21",
       "expires": "2026-05-28"
+    },
+    {
+      "code": "NP-3T37ZZ",
+      "client": "Emil Detektiv",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
     }
   ]
 }
