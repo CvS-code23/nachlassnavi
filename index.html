@@ -203,9 +203,79 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .sb-footer{padding:.6rem .6rem .4rem;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:center;gap:1rem}
 .sb-footer-link{font-size:10px;color:rgba(255,255,255,.3);cursor:pointer;text-decoration:underline;text-underline-offset:2px;transition:color .15s}
 .sb-footer-link:hover{color:rgba(255,255,255,.6)}
+
+/* GATE & ADMIN */
+#np-gate,#admin-panel{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;font-family:Arial,sans-serif;background:#0d2560}
+#np-gate.hidden,#admin-panel.hidden{display:none}
+.gate-box,.admin-box{background:white;border-radius:10px;padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.35);text-align:center}
+.gate-logo{font-family:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;font-size:22px;font-weight:normal;color:#0d2560;letter-spacing:.08em;margin-bottom:.3rem}
+.gate-sub{font-size:12px;color:#444;margin-bottom:2rem;letter-spacing:.05em;text-transform:uppercase}
+.gate-label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#444;text-align:left;margin-bottom:.35rem}
+.gate-input{width:100%;padding:.65rem 1rem;border:1px solid #ccc;border-radius:6px;font-size:15px;font-family:Arial,sans-serif;letter-spacing:.12em;text-align:center;color:#0d2560;margin-bottom:1.2rem;box-sizing:border-box;transition:border-color .15s}
+.gate-input:focus{outline:none;border-color:#0d2560;box-shadow:0 0 0 3px rgba(13,37,96,.1)}
+.gate-btn{width:100%;padding:.75rem;background:#0d2560;color:white;border:none;border-radius:6px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;cursor:pointer;letter-spacing:.04em;transition:background .15s}
+.gate-btn:hover{background:#b8952a}
+.gate-err{font-size:12px;color:#c0392b;margin-top:.75rem;min-height:18px}
+.gate-hint{font-size:11px;color:#888;margin-top:1.5rem}
+.admin-box{max-width:500px;text-align:left}
+.admin-title{font-family:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;font-size:18px;color:#0d2560;margin-bottom:1.2rem}
+.admin-field{margin-bottom:.8rem}
+.admin-field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#444;margin-bottom:.3rem}
+.admin-field input{width:100%;padding:.5rem .75rem;border:1px solid #ccc;border-radius:5px;font-size:13px;font-family:Arial,sans-serif;box-sizing:border-box}
+.admin-field input:focus{outline:none;border-color:#0d2560}
+.admin-codes-list{max-height:140px;overflow-y:auto;border:1px solid #ddd;border-radius:5px;margin-bottom:.8rem;background:#f9f9f9}
+.admin-code-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem .75rem;border-bottom:1px solid #eee;font-size:13px;font-family:monospace;color:#0d2560}
+.admin-code-row:last-child{border-bottom:none}
+.admin-del-btn{background:none;border:none;color:#c0392b;cursor:pointer;font-size:16px;line-height:1;padding:0 .25rem}
+.admin-add-row{display:flex;gap:.5rem;margin-bottom:.8rem}
+.admin-add-row input{flex:1;padding:.5rem .75rem;border:1px solid #ccc;border-radius:5px;font-size:13px;font-family:monospace;box-sizing:border-box}
+.admin-add-row input:focus{outline:none;border-color:#0d2560}
+.admin-sm-btn{padding:.5rem .9rem;background:#0d2560;color:white;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;transition:background .15s;white-space:nowrap}
+.admin-sm-btn:hover{background:#b8952a}
+.admin-sm-btn.secondary{background:#444}
+.admin-sm-btn.secondary:hover{background:#222}
+.admin-save-btn{width:100%;padding:.7rem;background:#b8952a;color:white;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;margin-top:.5rem;transition:background .15s}
+.admin-save-btn:hover{background:#0d2560}
+.admin-close-btn{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:0;line-height:1}
+.admin-msg{font-size:12px;margin-top:.6rem;min-height:16px;color:#2d7a4f}
 </style>
 </head>
 <body>
+<!-- GATE -->
+<div id="np-gate">
+  <div class="gate-box">
+    <div class="gate-logo">von Schoenebeck</div>
+    <div class="gate-sub">Rechtsanwältinnen &amp; Notare</div>
+    <label class="gate-label" for="gate-code">Zugangscode</label>
+    <input class="gate-input" id="gate-code" type="password" placeholder="••••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')gateSubmit()">
+    <button class="gate-btn" onclick="gateSubmit()">Zugang bestätigen</button>
+    <div class="gate-err" id="gate-err"></div>
+    <div class="gate-hint">Kein Zugang? Bitte wenden Sie sich an die Kanzlei.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="hidden">
+  <div class="admin-box">
+    <button class="admin-close-btn" onclick="adminClose()">✕</button>
+    <div class="admin-title">Zugangscode-Verwaltung</div>
+    <div class="admin-field">
+      <label>GitHub Token (wird nur lokal gespeichert)</label>
+      <input type="password" id="admin-token" placeholder="github_pat_..." oninput="adminSaveToken()">
+    </div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#444;margin-bottom:.4rem">Aktive Zugangscodes</div>
+    <div class="admin-codes-list" id="admin-codes-list"></div>
+    <div class="admin-add-row">
+      <input type="text" id="admin-new-code" placeholder="Neuer Code (z.B. MANDANT2025)" style="text-transform:uppercase">
+      <button class="admin-sm-btn secondary" onclick="adminGenCode()">Zufällig</button>
+      <button class="admin-sm-btn" onclick="adminAddCode()">Hinzufügen</button>
+    </div>
+    <button class="admin-save-btn" onclick="adminSaveCodes()">Speichern &amp; auf GitHub veröffentlichen</button>
+    <div class="admin-msg" id="admin-msg"></div>
+  </div>
+</div>
+
 <!-- DATENSCHUTZ MODAL -->
 <div class="modal-overlay" id="modal_ds">
   <div class="modal">
@@ -1002,6 +1072,148 @@ function getPLZData(plz) {
     miete: Math.round(lerp(miete_lo, miete_hi, t_miete) * 2) / 2,
     kf:    Math.round(lerp(kf_lo, kf_hi, t_kf))
   };
+}
+
+// =============================================
+// GATE & ADMIN
+// =============================================
+const ADMIN_CODE    = 'VSS-ADMIN-2025';
+const FALLBACK_CODE = 'VSS2025';
+const GITHUB_OWNER  = 'CvS-code23';
+const GITHUB_REPO   = 'nachlasspilot';
+
+let npCodes = null;
+
+async function gateLoadCodes(){
+  try{
+    const r = await fetch('./codes.json?t='+Date.now());
+    if(!r.ok) throw new Error('not found');
+    const d = await r.json();
+    npCodes = Array.isArray(d.codes) && d.codes.length ? d.codes : [FALLBACK_CODE];
+  } catch(e){ npCodes = [FALLBACK_CODE]; }
+}
+
+(function(){
+  if(sessionStorage.getItem('np_auth')==='1'){
+    const g = document.getElementById('np-gate');
+    if(g) g.remove();
+  } else {
+    gateLoadCodes();
+  }
+})();
+
+function gateSubmit(){
+  const v = (document.getElementById('gate-code').value||'').trim().toUpperCase();
+  if(v === ADMIN_CODE.toUpperCase()){ openAdminPanel(); return; }
+  const codes = (npCodes||[FALLBACK_CODE]).map(c=>c.toUpperCase());
+  if(codes.includes(v)){
+    sessionStorage.setItem('np_auth','1');
+    const g = document.getElementById('np-gate');
+    if(g) g.remove();
+  } else {
+    const err = document.getElementById('gate-err');
+    if(err){ err.textContent = 'Ungültiger Zugangscode. Bitte erneut versuchen.'; }
+    const inp = document.getElementById('gate-code');
+    if(inp){ inp.value=''; inp.focus(); }
+  }
+}
+
+function openAdminPanel(){
+  const g = document.getElementById('np-gate');
+  if(g) g.classList.add('hidden');
+  const p = document.getElementById('admin-panel');
+  if(p) p.classList.remove('hidden');
+  const tok = localStorage.getItem('np_admin_token')||'';
+  const ti = document.getElementById('admin-token');
+  if(ti) ti.value = tok;
+  adminLoadPanel();
+}
+
+function adminClose(){
+  document.getElementById('admin-panel').classList.add('hidden');
+  document.getElementById('np-gate').classList.remove('hidden');
+  document.getElementById('gate-code').value='';
+}
+
+function adminLoadPanel(){
+  if(!npCodes) npCodes = [FALLBACK_CODE];
+  adminRenderCodes();
+}
+
+function adminRenderCodes(){
+  const list = document.getElementById('admin-codes-list');
+  if(!list) return;
+  if(!npCodes||!npCodes.length){ list.innerHTML='<div style="padding:.6rem .75rem;color:#888;font-size:12px">Keine Codes</div>'; return; }
+  list.innerHTML = npCodes.map(c=>`
+    <div class="admin-code-row">
+      <span>${c}</span>
+      <div>
+        <button class="admin-del-btn" onclick="adminDeleteCode('${c}')" title="Löschen">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function adminDeleteCode(code){
+  npCodes = (npCodes||[]).filter(c=>c!==code);
+  adminRenderCodes();
+}
+
+function adminGenCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='NP-';
+  for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  const inp = document.getElementById('admin-new-code');
+  if(inp) inp.value=code;
+}
+
+function adminAddCode(){
+  const inp = document.getElementById('admin-new-code');
+  const val = (inp?inp.value:'').trim().toUpperCase();
+  if(!val){ setAdminMsg('Bitte einen Code eingeben.','#c0392b'); return; }
+  if(!npCodes) npCodes=[];
+  if(npCodes.map(c=>c.toUpperCase()).includes(val)){ setAdminMsg('Code bereits vorhanden.','#b8952a'); return; }
+  npCodes.push(val);
+  if(inp) inp.value='';
+  adminRenderCodes();
+  setAdminMsg('Code hinzugefügt. Bitte speichern!','#b8952a');
+}
+
+function adminSaveToken(){
+  const v = (document.getElementById('admin-token')||{}).value||'';
+  localStorage.setItem('np_admin_token', v);
+}
+
+async function adminSaveCodes(){
+  const token = localStorage.getItem('np_admin_token')||'';
+  if(!token){ setAdminMsg('Bitte zuerst ein GitHub Token eingeben.','#c0392b'); return; }
+  if(!npCodes||!npCodes.length){ setAdminMsg('Keine Codes zum Speichern.','#c0392b'); return; }
+  setAdminMsg('Wird gespeichert…','#444');
+  try{
+    const getR = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,{
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    let sha='';
+    if(getR.ok){ const d=await getR.json(); sha=d.sha||''; }
+    const content = btoa(JSON.stringify({codes:npCodes},null,2));
+    const body = {message:'Zugangscodes aktualisiert',content};
+    if(sha) body.sha=sha;
+    const putR = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(putR.ok){
+      setAdminMsg('✓ Gespeichert! Codes sind jetzt aktiv.','#2d7a4f');
+    } else {
+      const err=await putR.json();
+      setAdminMsg('Fehler: '+(err.message||putR.status),'#c0392b');
+    }
+  } catch(e){ setAdminMsg('Netzwerkfehler: '+e.message,'#c0392b'); }
+}
+
+function setAdminMsg(msg,color){
+  const el=document.getElementById('admin-msg');
+  if(el){el.textContent=msg;el.style.color=color||'#2d7a4f';}
 }
 
 // =============================================
