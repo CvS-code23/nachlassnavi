@@ -249,7 +249,7 @@ function renderTable(){
     }
     return `<tr style="${status==='exp'?'opacity:.5':''}">
       <td>${escHtml(c.client)}</td>
-      <td><span class="code-val">${escHtml(c.code)}</span></td>
+      <td><span class="code-val" onclick="copyCode('${escHtml(c.code)}')" title="Klicken zum Kopieren" style="cursor:pointer">${escHtml(c.code)}</span></td>
       <td>${c.created}</td>
       <td>${c.expires}</td>
       <td>${badge}</td>
@@ -265,6 +265,13 @@ function renderTable(){
 }
 
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function copyCode(code){
+  navigator.clipboard.writeText(code).then(()=>{
+    setMsg('✓ Code „'+code+'" in Zwischenablage kopiert.', 'ok');
+    setTimeout(()=>setMsg('',''), 2500);
+  }).catch(()=>{ setMsg('Kopieren nicht möglich – bitte manuell markieren.', 'err'); });
+}
 
 async function loadCodes(){
   const token = getToken();
