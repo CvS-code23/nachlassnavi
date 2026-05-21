@@ -1132,10 +1132,11 @@ function showGreeting(){
   if(!name) return;
   const sal = sessionStorage.getItem('np_salutation') || '';
   const salPrefix = sal ? sal + ' ' : '';
+  const lastName = name.trim().split(/\s+/).pop();
   const el = document.getElementById('np-greeting');
-  if(el){ el.textContent = 'Willkommen, ' + salPrefix + name; el.style.display = 'inline'; }
+  if(el){ el.textContent = 'Willkommen, ' + salPrefix + lastName; el.style.display = 'inline'; }
   const mg = document.getElementById('np-modal-greeting');
-  if(mg){ mg.textContent = 'Hallo, ' + salPrefix + name + '! Willkommen beim Nachlasspiloten!'; mg.style.display = 'block'; }
+  if(mg){ mg.textContent = 'Hallo, ' + salPrefix + lastName + '! Willkommen beim Nachlasspiloten!'; mg.style.display = 'block'; }
 }
 
 (function(){
