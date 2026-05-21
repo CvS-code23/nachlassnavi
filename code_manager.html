@@ -7,6 +7,40 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f4f4f0;color:#444;min-height:100vh}
+
+/* ── Password Gate ── */
+#cm-gate{
+  position:fixed;inset:0;background:#0d2560;
+  display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.cm-gate-box{
+  background:white;border-radius:10px;padding:2.5rem 2rem;
+  width:100%;max-width:360px;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.25);
+}
+.cm-gate-title{
+  font-family:'Palatino Linotype',Palatino,Georgia,serif;
+  font-size:1.25rem;color:#0d2560;margin-bottom:.4rem;
+}
+.cm-gate-sub{
+  font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:1.8rem;
+}
+.cm-gate-input{
+  width:100%;padding:.7rem 1rem;border:1.5px solid #ccc;border-radius:6px;
+  font-size:15px;text-align:center;letter-spacing:.12em;outline:none;
+  margin-bottom:.9rem;
+}
+.cm-gate-input:focus{border-color:#0d2560;}
+.cm-gate-btn{
+  width:100%;padding:.75rem;background:#0d2560;color:white;border:none;
+  border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;
+  font-family:Arial,sans-serif;transition:background .15s;
+}
+.cm-gate-btn:hover{background:#b8952a;}
+.cm-gate-err{color:#c0392b;font-size:13px;margin-top:.75rem;min-height:18px;}
+
+/* ── Main UI ── */
 .header{background:#0d2560;color:white;padding:1.2rem 2rem;display:flex;align-items:center;gap:1rem}
 .header h1{font-family:'Palatino Linotype',Palatino,Georgia,serif;font-size:1.4rem;font-weight:normal;letter-spacing:.05em}
 .header-sub{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-top:.15rem}
@@ -45,6 +79,19 @@ tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
+
+<!-- Password Gate -->
+<div id="cm-gate">
+  <div class="cm-gate-box">
+    <div class="cm-gate-title">Zugangscode-Manager</div>
+    <div class="cm-gate-sub">Kanzlei von Schoenebeck · Intern</div>
+    <input class="cm-gate-input" id="cm-pw" type="password" placeholder="Passwort"
+      onkeydown="if(event.key==='Enter')cmGateSubmit()">
+    <button class="cm-gate-btn" onclick="cmGateSubmit()">Anmelden</button>
+    <div class="cm-gate-err" id="cm-gate-err"></div>
+  </div>
+</div>
+
 <div class="header">
   <div>
     <div class="h1">
@@ -107,8 +154,32 @@ tr:last-child td{border-bottom:none}
 <script>
 const OWNER = 'CvS-code23';
 const REPO  = 'nachlasspilot';
+const PW_HASH = '00d0e44effca057a89fbea66816413af5636084a633d9e3223cba3245fd9e710';
 let codes = [];
 
+/* ── Gate ── */
+(function(){
+  if(sessionStorage.getItem('cm_auth') === '1'){
+    document.getElementById('cm-gate').remove();
+  }
+})();
+
+async function cmGateSubmit(){
+  const val = document.getElementById('cm-pw').value;
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(val));
+  const hex = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hex === PW_HASH){
+    sessionStorage.setItem('cm_auth','1');
+    document.getElementById('cm-gate').remove();
+  } else {
+    document.getElementById('cm-gate-err').textContent = 'Falsches Passwort.';
+    document.getElementById('cm-pw').value = '';
+    document.getElementById('cm-pw').focus();
+  }
+}
+
+/* ── Token ── */
 window.addEventListener('load', () => {
   const t = localStorage.getItem('np_cm_token') || '';
   if(t) document.getElementById('gh-token').value = t;
@@ -120,6 +191,7 @@ function saveToken(){
 
 function getToken(){ return (document.getElementById('gh-token').value || '').trim(); }
 
+/* ── Codes ── */
 function genCode(){
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let c = 'NP-';
@@ -200,12 +272,12 @@ async function loadCodes(){
   setMsg('Lade Codes von GitHub…', 'info');
   try{
     const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/codes.json`,{
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'},
+      cache:'no-store'
     });
     if(!r.ok) throw new Error('HTTP '+r.status);
     const d = await r.json();
     const content = JSON.parse(atob(d.content.replace(/\n/g,'')));
-    // Normalize: support both old string format and new object format
     codes = (content.codes || []).map(c =>
       typeof c === 'string'
         ? {code:c, client:'(unbekannt)', created:'', expires:'2099-12-31'}
@@ -223,7 +295,6 @@ async function saveCodes(){
   if(!token){ setMsg('Bitte zuerst ein GitHub Token eingeben.', 'err'); return; }
   setMsg('Wird gespeichert…', 'info');
   try{
-    // Get current SHA
     const getR = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/codes.json`,{
       headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
     });
@@ -252,7 +323,6 @@ function setMsg(msg, type){
   el.className = 'msg' + (type==='ok'?' msg-ok':type==='err'?' msg-err':' msg-info');
 }
 
-// Load on start if token present
 window.addEventListener('load', () => {
   if(getToken()) setTimeout(loadCodes, 300);
 });
