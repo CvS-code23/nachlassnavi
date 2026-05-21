@@ -5,6 +5,12 @@
       "client": "Testzugang",
       "created": "2026-05-21",
       "expires": "2099-12-31"
+    },
+    {
+      "code": "NP-M77F74",
+      "client": "Carl von Schoenebeck",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
     }
   ]
 }
