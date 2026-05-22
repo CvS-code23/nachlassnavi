@@ -87,7 +87,7 @@ tr:last-child td{border-bottom:none}
   transition:transform .2s;flex-shrink:0;
 }
 .expand-icon.open{transform:rotate(90deg)}
-@media(max-width:640px){
+@media(max-width:900px){
   .new-code-form{grid-template-columns:1fr 1fr;}
   .new-code-form .btn{margin-top:.5rem}
   .main{padding:0 .75rem}
@@ -97,10 +97,15 @@ tr:last-child td{border-bottom:none}
   .mobile-detail td{padding:.5rem .8rem .75rem;background:#fafaf8;border-bottom:1px solid #f0efeb}
   .name-cell{cursor:pointer}
 }
-@media(min-width:641px){
+@media(min-width:901px){
   .mobile-detail{display:none!important}
   .expand-icon{display:none!important}
 }
+.token-status{
+  display:none;align-items:center;gap:.75rem;padding:.6rem .9rem;
+  background:#e8f5ee;border-radius:6px;margin-bottom:1.5rem;font-size:13px;color:#2d7a4f;
+}
+.token-status a{color:#0d2560;font-size:12px;cursor:pointer;text-decoration:underline;margin-left:auto;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -129,7 +134,11 @@ tr:last-child td{border-bottom:none}
 <div class="main">
 
   <!-- GitHub Token -->
-  <div class="card">
+  <div class="token-status" id="token-status">
+    ✓ GitHub-Verbindung aktiv
+    <a onclick="showTokenCard()">Token ändern</a>
+  </div>
+  <div class="card" id="token-card">
     <div class="card-title">GitHub-Verbindung</div>
     <div class="token-row">
       <input type="password" id="gh-token" placeholder="GitHub Token (github_pat_...)" oninput="saveToken()">
@@ -207,8 +216,18 @@ async function cmGateSubmit(){
 /* ── Token ── */
 window.addEventListener('load', () => {
   const t = localStorage.getItem('np_cm_token') || '';
-  if(t) document.getElementById('gh-token').value = t;
+  if(t){
+    document.getElementById('gh-token').value = t;
+    document.getElementById('token-card').style.display = 'none';
+    document.getElementById('token-status').style.display = 'flex';
+    setTimeout(loadCodes, 300);
+  }
 });
+
+function showTokenCard(){
+  document.getElementById('token-card').style.display = 'block';
+  document.getElementById('token-status').style.display = 'none';
+}
 
 function saveToken(){
   localStorage.setItem('np_cm_token', document.getElementById('gh-token').value);
