@@ -119,7 +119,7 @@ tr:last-child td{border-bottom:none}
     <div class="new-code-form">
       <div class="field">
         <label>Mandant / Name</label>
-        <input type="text" id="new-client" placeholder="z.B. Wegner, Thomas">
+        <input type="text" id="new-client" placeholder="z.B. Max Mustermann">
       </div>
       <div class="field">
         <label>Code</label>
@@ -248,9 +248,9 @@ function renderTable(){
       <td>${c.created}</td>
       <td>${c.expires}</td>
       <td>${badge}</td>
-      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
-        <button class="btn btn-sm" onclick="extendCode('${escHtml(c.code)}')">+7 Tage</button>
-        <button class="btn btn-danger" onclick="removeCode('${escHtml(c.code)}')">Löschen</button>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" style="min-width:72px" onclick="extendCode('${escHtml(c.code)}')">+7 Tage</button>
+        <button class="btn btn-danger" style="min-width:72px;margin-left:.3rem" onclick="removeCode('${escHtml(c.code)}')">Löschen</button>
       </td>
     </tr>`;
   }).join('');
