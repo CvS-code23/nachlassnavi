@@ -344,6 +344,12 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="nav-item" onclick="showPage('verbindlichkeiten')"><div class="nav-icon">📉</div>Verbindlichkeiten<span class="nav-right passiva-c" id="ns_verbindlichkeiten">–</span></div>
     <div class="sb-divider"></div>
     <div class="nav-item" onclick="showPage('dashboard')"><div class="nav-icon">📊</div><strong>Zusammenfassung</strong></div>
+    <div style="padding:.75rem .75rem .25rem">
+      <div id="progress-text" style="font-size:11px;color:rgba(255,255,255,.45);margin-bottom:.35rem">0 / 11 Bereiche ausgefüllt</div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;height:5px">
+        <div id="progress-bar-fill" style="background:#b8952a;height:5px;border-radius:10px;width:0%;transition:width .4s"></div>
+      </div>
+    </div>
   </div>
   <div style="flex:1"></div>
   <div class="sb-totals">
@@ -1141,12 +1147,22 @@ function showGreeting(){
     const g = document.getElementById('np-gate');
     if(g) g.remove();
     showGreeting();
+    if(localStorage.getItem('np_modal_seen')==='1'){
+      const m = document.getElementById('modal_ds');
+      if(m) m.style.display='none';
+    }
+    setTimeout(updateProgress, 500);
   } else {
     const btn = document.getElementById('gate-btn');
     if(btn){ btn.disabled=true; btn.textContent='Wird geladen …'; }
+    const urlCode = new URLSearchParams(window.location.search).get('code');
     gateLoadCodes().then(()=>{
       npCodesReady = true;
       if(btn){ btn.disabled=false; btn.textContent='Zugang bestätigen'; }
+      if(urlCode){
+        const inp = document.getElementById('gate-code');
+        if(inp){ inp.value=urlCode; gateSubmit(); }
+      }
     });
   }
 })();
@@ -1327,6 +1343,7 @@ function loadAll(data){
 // =============================================
 function showPage(name){
   const mc=document.querySelector('.main-content');if(mc)mc.scrollTop=0;
+  updateProgress();
   document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page_'+name).classList.add('active');
@@ -1335,7 +1352,19 @@ function showPage(name){
   });
   if(name==='dashboard')renderDashboard();
 }
-function closeModal(){document.getElementById('modal_ds').style.display='none';}
+function closeModal(){document.getElementById('modal_ds').style.display='none';localStorage.setItem('np_modal_seen','1');}
+
+function updateProgress(){
+  const secs=['immobilien','bankkonten','wertpapiere','fahrzeuge','versicherungen','beteiligungen','wertgegenstaende','forderungen','sonstiges','verbindlichkeiten'];
+  let filled=secs.filter(s=>{const el=document.getElementById('ns_'+s);if(!el)return false;const t=el.textContent.trim();return t!=='–'&&t!=='0'&&t!=='';}).length;
+  const erlName=document.getElementById('erl_name');
+  if(erlName&&erlName.value.trim())filled++;
+  const total=secs.length+1;
+  const bar=document.getElementById('progress-bar-fill');
+  const txt=document.getElementById('progress-text');
+  if(bar)bar.style.width=Math.round(filled/total*100)+'%';
+  if(txt)txt.textContent=filled+' / '+total+' Bereiche ausgefüllt';
+}
 function openDSModal(){document.getElementById('modal_dserkl').style.display='flex';}
 function closeDSModal(){document.getElementById('modal_dserkl').style.display='none';}
 
