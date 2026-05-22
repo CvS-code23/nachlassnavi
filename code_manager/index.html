@@ -78,6 +78,15 @@ tr:last-child td{border-bottom:none}
 .msg-ok{color:#2d7a4f}.msg-err{color:#c0392b}.msg-info{color:#b8860b}
 .empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
 .mobile-detail{display:none}
+.expand-icon{
+  display:inline-block;width:0;height:0;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  border-left:5px solid #b8952a;
+  margin-left:.45rem;vertical-align:middle;
+  transition:transform .2s;flex-shrink:0;
+}
+.expand-icon.open{transform:rotate(90deg)}
 @media(max-width:640px){
   .new-code-form{grid-template-columns:1fr 1fr;}
   .new-code-form .btn{margin-top:.5rem}
@@ -86,12 +95,11 @@ tr:last-child td{border-bottom:none}
   table th:nth-child(n+3), table td.td-hide{display:none}
   .mobile-detail.open{display:table-row}
   .mobile-detail td{padding:.5rem .8rem .75rem;background:#fafaf8;border-bottom:1px solid #f0efeb}
-  .expand-icon{margin-left:.35rem;font-size:.7rem;color:#b8952a;display:inline-block}
-  .data-row{cursor:pointer}
+  .name-cell{cursor:pointer}
 }
 @media(min-width:641px){
   .mobile-detail{display:none!important}
-  .expand-icon{display:none}
+  .expand-icon{display:none!important}
 }
 </style>
 </head>
@@ -260,9 +268,9 @@ function renderTable(){
     } else {
       badge = `<span class="badge badge-ok">Aktiv – noch ${d} Tage</span>`; status = 'ok';
     }
-    return `<tr class="data-row" onclick="toggleDetail('${cid}')" style="${status==='exp'?'opacity:.5':''}">
-      <td>${c.salutation ? escHtml(c.salutation)+' ' : ''}${escHtml(c.client)}<span class="expand-icon" id="icon-${cid}">▶</span></td>
-      <td onclick="event.stopPropagation()"><span class="code-val" onclick="copyCode('${cid}')" title="Klicken zum Kopieren" style="cursor:pointer">${cid}</span></td>
+    return `<tr style="${status==='exp'?'opacity:.5':''}">
+      <td class="name-cell" onclick="toggleDetail('${cid}')">${c.salutation ? escHtml(c.salutation)+' ' : ''}${escHtml(c.client)}<span class="expand-icon" id="icon-${cid}"></span></td>
+      <td><span class="code-val" onclick="copyCode('${cid}')" title="Klicken zum Kopieren" style="cursor:pointer">${cid}</span></td>
       <td class="td-hide">${c.created}</td>
       <td class="td-hide">${c.expires}</td>
       <td class="td-hide">${badge}</td>
@@ -307,12 +315,12 @@ function extendCode(code){
 
 
 function toggleDetail(code){
-  if(window.innerWidth > 640) return;
+  if(!window.matchMedia('(max-width:640px)').matches) return;
   const detail = document.getElementById('detail-'+code);
   const icon   = document.getElementById('icon-'+code);
   if(!detail) return;
   detail.classList.toggle('open');
-  if(icon) icon.textContent = detail.classList.contains('open') ? '▼' : '▶';
+  if(icon) icon.classList.toggle('open', detail.classList.contains('open'));
 }
 
 function copyCode(code){
