@@ -121,6 +121,9 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 /* BUTTONS */
 .btn-add{display:inline-flex;align-items:center;gap:6px;padding:.5rem .95rem;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s;margin-top:.5rem}
 .btn-add:hover{background:var(--navy2)}
+.btn-keine{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border:1.5px solid #ccc;border-radius:var(--radius);background:white;color:#888;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:.5rem;margin-left:.5rem}
+.btn-keine:hover{border-color:var(--navy);color:var(--navy)}
+.btn-keine.active{background:#e8f5ee;color:#2d7a4f;border-color:#2d7a4f}
 .btn-del{background:white;color:var(--red);border:1px solid var(--red-border);border-radius:var(--radius);padding:.25rem .5rem;font-size:11px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .15s;margin-left:.4rem}
 .btn-del:hover{background:var(--red-bg)}
 .btn-calc-sm{background:var(--navy);color:white;border:none;border-radius:var(--radius);padding:.42rem .85rem;font-size:12.5px;font-weight:600;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s}
@@ -464,6 +467,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Grundvermögen – Bewertung nach Vergleichswert-, Ertragswert- und Sachwertverfahren (§§ 182–198 BewG)</div>
     <div class="pos-list" id="list_immobilien"></div>
     <button class="btn-add" onclick="addPos('immobilien')">+ Immobilie hinzufügen</button>
+    <button class="btn-keine" id="keine_immobilien" onclick="toggleKeine('immobilien')">☐ Keine Immobilien vorhanden</button>
     <div class="sum-row" id="sum_immobilien" style="display:none"><span class="sum-label">Summe Immobilien</span><span class="sum-val" id="sv_immobilien">–</span></div>
   </div>
 
@@ -473,6 +477,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Giro-, Spar- und Tagesgeldkonten, Sparbücher, Bargeld</div>
     <div class="pos-list" id="list_bankkonten"></div>
     <button class="btn-add" onclick="addPos('bankkonten')">+ Konto / Bargeld hinzufügen</button>
+    <button class="btn-keine" id="keine_bankkonten" onclick="toggleKeine('bankkonten')">☐ Keine Bankkonten vorhanden</button>
     <div class="sum-row" id="sum_bankkonten" style="display:none"><span class="sum-label">Summe Bankguthaben & Bargeld</span><span class="sum-val" id="sv_bankkonten">–</span></div>
   </div>
 
@@ -482,6 +487,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Aktien, ETFs, Fonds, Anleihen, Kryptowährungen</div>
     <div class="pos-list" id="list_wertpapiere"></div>
     <button class="btn-add" onclick="addPos('wertpapiere')">+ Wertpapier / Depot hinzufügen</button>
+    <button class="btn-keine" id="keine_wertpapiere" onclick="toggleKeine('wertpapiere')">☐ Keine Wertpapiere vorhanden</button>
     <div class="sum-row" id="sum_wertpapiere" style="display:none"><span class="sum-label">Summe Wertpapiere</span><span class="sum-val" id="sv_wertpapiere">–</span></div>
   </div>
 
@@ -491,6 +497,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">PKW, Motorräder, Boote, Wohnmobile, Nutzfahrzeuge</div>
     <div class="pos-list" id="list_fahrzeuge"></div>
     <button class="btn-add" onclick="addPos('fahrzeuge')">+ Fahrzeug hinzufügen</button>
+    <button class="btn-keine" id="keine_fahrzeuge" onclick="toggleKeine('fahrzeuge')">☐ Keine Fahrzeuge vorhanden</button>
     <div class="sum-row" id="sum_fahrzeuge" style="display:none"><span class="sum-label">Summe Fahrzeuge</span><span class="sum-val" id="sv_fahrzeuge">–</span></div>
   </div>
 
@@ -500,6 +507,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Kapitalbildende Versicherungen mit Rückkaufwert</div>
     <div class="pos-list" id="list_versicherungen"></div>
     <button class="btn-add" onclick="addPos('versicherungen')">+ Versicherung hinzufügen</button>
+    <button class="btn-keine" id="keine_versicherungen" onclick="toggleKeine('versicherungen')">☐ Keine Versicherungen vorhanden</button>
     <div class="sum-row" id="sum_versicherungen" style="display:none"><span class="sum-label">Summe Versicherungen (Rückkaufwerte)</span><span class="sum-val" id="sv_versicherungen">–</span></div>
   </div>
 
@@ -509,6 +517,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">GmbH, AG, KG, stille Beteiligungen, Genossenschaften</div>
     <div class="pos-list" id="list_beteiligungen"></div>
     <button class="btn-add" onclick="addPos('beteiligungen')">+ Beteiligung hinzufügen</button>
+    <button class="btn-keine" id="keine_beteiligungen" onclick="toggleKeine('beteiligungen')">☐ Keine Beteiligungen vorhanden</button>
     <div class="sum-row" id="sum_beteiligungen" style="display:none"><span class="sum-label">Summe Beteiligungen</span><span class="sum-val" id="sv_beteiligungen">–</span></div>
   </div>
 
@@ -518,6 +527,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Schmuck, Kunst, Antiquitäten, Sammlungen, Edelmetalle</div>
     <div class="pos-list" id="list_wertgegenstaende"></div>
     <button class="btn-add" onclick="addPos('wertgegenstaende')">+ Wertgegenstand hinzufügen</button>
+    <button class="btn-keine" id="keine_wertgegenstaende" onclick="toggleKeine('wertgegenstaende')">☐ Keine Wertgegenstände vorhanden</button>
     <div class="sum-row" id="sum_wertgegenstaende" style="display:none"><span class="sum-label">Summe Wertgegenstände</span><span class="sum-val" id="sv_wertgegenstaende">–</span></div>
   </div>
 
@@ -527,6 +537,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Darlehen an Dritte, ausstehende Zahlungen, Mietkautionen</div>
     <div class="pos-list" id="list_forderungen"></div>
     <button class="btn-add" onclick="addPos('forderungen')">+ Forderung hinzufügen</button>
+    <button class="btn-keine" id="keine_forderungen" onclick="toggleKeine('forderungen')">☐ Keine Forderungen vorhanden</button>
     <div class="sum-row" id="sum_forderungen" style="display:none"><span class="sum-label">Summe Forderungen</span><span class="sum-val" id="sv_forderungen">–</span></div>
   </div>
 
@@ -536,6 +547,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Digitale Assets, Domains, Patente, Urheberrechte, Sonstiges</div>
     <div class="pos-list" id="list_sonstiges"></div>
     <button class="btn-add" onclick="addPos('sonstiges')">+ Position hinzufügen</button>
+    <button class="btn-keine" id="keine_sonstiges" onclick="toggleKeine('sonstiges')">☐ Kein sonstiges Vermögen vorhanden</button>
     <div class="sum-row" id="sum_sonstiges" style="display:none"><span class="sum-label">Summe Sonstiges</span><span class="sum-val" id="sv_sonstiges">–</span></div>
   </div>
 
@@ -545,6 +557,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="page-sub">Hypotheken, Kredite, Schulden – werden als Passiva vom Nachlass abgezogen</div>
     <div class="pos-list" id="list_verbindlichkeiten"></div>
     <button class="btn-add" onclick="addPos('verbindlichkeiten')">+ Verbindlichkeit hinzufügen</button>
+    <button class="btn-keine" id="keine_verbindlichkeiten" onclick="toggleKeine('verbindlichkeiten')">☐ Keine Verbindlichkeiten vorhanden</button>
     <div class="sum-row" id="sum_verbindlichkeiten" style="display:none;background:var(--red)"><span class="sum-label">Summe Verbindlichkeiten</span><span class="sum-val" id="sv_verbindlichkeiten">–</span></div>
   </div>
 
@@ -1151,7 +1164,7 @@ function showGreeting(){
       const m = document.getElementById('modal_ds');
       if(m) m.style.display='none';
     }
-    setTimeout(updateProgress, 500);
+    setTimeout(()=>{initKeine();updateProgress();}, 500);
   } else {
     const btn = document.getElementById('gate-btn');
     if(btn){ btn.disabled=true; btn.textContent='Wird geladen …'; }
@@ -1189,6 +1202,7 @@ async function gateSubmit(){
     showGreeting();
     const g = document.getElementById('np-gate');
     if(g) g.remove();
+    setTimeout(()=>{initKeine();updateProgress();}, 300);
   } else {
     const err = document.getElementById('gate-err');
     const allCodes = list.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
@@ -1354,9 +1368,32 @@ function showPage(name){
 }
 function closeModal(){document.getElementById('modal_ds').style.display='none';localStorage.setItem('np_modal_seen','1');}
 
+const KEINE_LABELS={immobilien:'Immobilien',bankkonten:'Bankkonten',wertpapiere:'Wertpapiere',fahrzeuge:'Fahrzeuge',versicherungen:'Versicherungen',beteiligungen:'Beteiligungen',wertgegenstaende:'Wertgegenstände',forderungen:'Forderungen',sonstiges:'sonstiges Vermögen',verbindlichkeiten:'Verbindlichkeiten'};
+
+function toggleKeine(section){
+  const key='np_keine_'+section;
+  localStorage.setItem(key, localStorage.getItem(key)==='1'?'0':'1');
+  renderKeineBtn(section);
+  updateProgress();
+}
+
+function renderKeineBtn(section){
+  const btn=document.getElementById('keine_'+section);
+  if(!btn)return;
+  const active=localStorage.getItem('np_keine_'+section)==='1';
+  btn.textContent=(active?'☑ ':'☐ ')+'Keine '+KEINE_LABELS[section]+' vorhanden';
+  btn.className='btn-keine'+(active?' active':'');
+}
+
+function initKeine(){Object.keys(KEINE_LABELS).forEach(s=>renderKeineBtn(s));}
+
 function updateProgress(){
   const secs=['immobilien','bankkonten','wertpapiere','fahrzeuge','versicherungen','beteiligungen','wertgegenstaende','forderungen','sonstiges','verbindlichkeiten'];
-  let filled=secs.filter(s=>{const el=document.getElementById('ns_'+s);if(!el)return false;const t=el.textContent.trim();return t!=='–'&&t!=='0'&&t!=='';}).length;
+  let filled=secs.filter(s=>{
+    const el=document.getElementById('ns_'+s);
+    const hasItems=el&&el.textContent.trim()!=='–'&&el.textContent.trim()!=='0'&&el.textContent.trim()!=='';
+    return hasItems||localStorage.getItem('np_keine_'+s)==='1';
+  }).length;
   const erlName=document.getElementById('erl_name');
   if(erlName&&erlName.value.trim())filled++;
   const total=secs.length+1;
