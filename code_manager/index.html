@@ -77,20 +77,8 @@ tr:last-child td{border-bottom:none}
 .empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
 @media(max-width:640px){.new-code-form{grid-template-columns:1fr 1fr;}.new-code-form .btn{margin-top:.5rem}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
-
-<!-- QR Modal -->
-<div id="qr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:white;padding:2rem;border-radius:10px;text-align:center;max-width:300px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25)">
-    <div id="qr-client" style="font-family:'Palatino Linotype',Georgia,serif;color:#0d2560;font-size:1.05rem;margin-bottom:.25rem;font-weight:600"></div>
-    <div id="qr-code-label" style="font-family:monospace;font-size:13px;color:#b8952a;letter-spacing:.1em;margin-bottom:1rem"></div>
-    <div id="qr-canvas" style="display:flex;justify-content:center;margin-bottom:1.2rem"></div>
-    <p style="font-size:11px;color:#aaa;margin-bottom:1rem">Mandant scannt diesen Code mit dem Handy — der Nachlasspilot öffnet sich automatisch.</p>
-    <button class="btn btn-primary" onclick="closeQR()">Schließen</button>
-  </div>
-</div>
 
 <!-- Password Gate -->
 <div id="cm-gate">
@@ -262,7 +250,6 @@ function renderTable(){
       <td>${badge}</td>
       <td style="display:flex;gap:.4rem;flex-wrap:wrap">
         <button class="btn btn-sm" onclick="extendCode('${escHtml(c.code)}')">+7 Tage</button>
-        <button class="btn btn-sm" onclick="showQR('${escHtml(c.code)}','${escHtml(c.client)}')">QR</button>
         <button class="btn btn-danger" onclick="removeCode('${escHtml(c.code)}')">Löschen</button>
       </td>
     </tr>`;
@@ -287,23 +274,6 @@ function extendCode(code){
   setMsg('Gültigkeit verlängert – bitte speichern!', 'warn');
 }
 
-function showQR(code, client){
-  document.getElementById('qr-client').textContent = client;
-  document.getElementById('qr-code-label').textContent = code;
-  const url = 'https://nachlasspilot.vonschoenebeck.de/?code=' + encodeURIComponent(code);
-  const container = document.getElementById('qr-canvas');
-  container.innerHTML = '';
-  const canvas = document.createElement('canvas');
-  QRCode.toCanvas(canvas, url, {width:200, margin:2}, function(err){
-    if(!err) container.appendChild(canvas);
-  });
-  document.getElementById('qr-modal').style.display = 'flex';
-}
-
-function closeQR(){
-  document.getElementById('qr-modal').style.display = 'none';
-  document.getElementById('qr-canvas').innerHTML = '';
-}
 
 function copyCode(code){
   navigator.clipboard.writeText(code).then(()=>{
