@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nachlasspilot – Nachlassverzeichnis</title>
+<title>Nachlassnavi – Nachlassverzeichnis</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <style>
@@ -311,9 +311,9 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
   <div class="modal">
     <div class="modal-logo">
       <div class="modal-mark"><svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg></div>
-      <span class="modal-name">Nachlasspilot</span>
+      <span class="modal-name">Nachlassnavi</span>
     </div>
-    <h2>Willkommen beim Nachlasspiloten</h2>
+    <h2>Willkommen beim Nachlassnavi</h2>
     <p id="np-modal-greeting" style="display:none;font-weight:600;font-size:1.05rem;color:#0d2560;margin-top:-.2rem;margin-bottom:.1rem"></p>
     <p>Mit dieser Anwendung erstellen Sie ein vollständiges, formales Nachlassverzeichnis – mit Immobilienbewertung, Bankguthaben, Wertpapieren, Fahrzeugen und allen weiteren Vermögensgegenständen.</p>
     <p>Am Ende exportieren Sie ein PDF-Dokument, das Ihrer Anwältin oder dem Gericht vorgelegt werden kann.</p>
@@ -332,7 +332,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <button class="hamburger" onclick="toggleSidebar()" aria-label="Menü">☰</button>
     <div class="h-logo">
       <div class="h-logo-mark"><svg viewBox="0 0 20 20"><path d="M10 2L3 7v11h5v-6h4v6h5V7L10 2z"/></svg></div>
-      <span class="h-logo-name">Nachlasspilot</span>
+      <span class="h-logo-name">Nachlassnavi</span>
       <span class="h-logo-sub">Nachlassverzeichnis</span>
     </div>
     <div class="h-actions">
@@ -403,7 +403,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
     <div class="ds-p">Rechtsanwältin Dr. Astrid von Schoenebeck<br>Reichsstraße 4, 14052 Berlin<br>E-Mail: <a href="mailto:kanzlei@vonschoenebeck.de" style="color:var(--navy2)">kanzlei@vonschoenebeck.de</a></div>
 
     <div class="ds-section">2. Lokale Datenverarbeitung</div>
-    <div class="ds-p">Der Nachlasspilot verarbeitet alle von Ihnen eingegebenen Daten (Namen, Adressen, Vermögenswerte etc.) ausschließlich lokal in Ihrem Browser. Es findet <strong>keine Übertragung</strong> dieser Daten an Server oder Dritte statt. Die Daten werden im <code>localStorage</code> Ihres Browsers gespeichert und verlassen Ihr Gerät zu keinem Zeitpunkt automatisch.</div>
+    <div class="ds-p">Nachlassnavi verarbeitet alle von Ihnen eingegebenen Daten (Namen, Adressen, Vermögenswerte etc.) ausschließlich lokal in Ihrem Browser. Es findet <strong>keine Übertragung</strong> dieser Daten an Server oder Dritte statt. Die Daten werden im <code>localStorage</code> Ihres Browsers gespeichert und verlassen Ihr Gerät zu keinem Zeitpunkt automatisch.</div>
     <div class="ds-p">Den Export (JSON-Datei, PDF) steuern Sie selbst – diese Dateien werden direkt auf Ihr Gerät gespeichert.</div>
 
     <div class="ds-section">3. Server-Logfiles beim Seitenaufruf</div>
@@ -1130,7 +1130,7 @@ function getPLZData(plz) {
 const ADMIN_CODE    = 'VSS-ADMIN-2025';
 const FALLBACK_CODE = 'VSS2025';
 const GITHUB_OWNER  = 'CvS-code23';
-const GITHUB_REPO   = 'nachlasspilot';
+const GITHUB_REPO   = 'nachlassnavi';
 
 let npCodes = null;
 
@@ -1867,7 +1867,7 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(snap(),null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='nachlasspilot_'+(gv('erl_name')||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
+  a.download='nachlassnavi_'+(gv('erl_name')||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
   a.click();
 }
 function importJSON(evt){
@@ -1903,7 +1903,7 @@ function exportPDF(){
   doc.setFillColor(232,162,53);doc.rect(0,55,W,2.5,'F');
   T('NACHLASSPILOT',ML,20,22,'bold',[255,255,255]);
   T('Nachlassverzeichnis',ML,31,13,'normal',[200,210,220]);
-  T('Vertrauliches Dokument – erstellt mit Nachlasspilot',ML,41,8,'italic',[140,155,175]);
+  T('Vertrauliches Dokument – erstellt mit Nachlassnavi',ML,41,8,'italic',[140,155,175]);
   y=68;
   T('ERBLASSER',ML,y,8,'bold',[150,150,150]);y+=6;
   T(erl.name||'(Name nicht angegeben)',ML,y,17,'bold',[15,27,45]);y+=9;
@@ -2015,10 +2015,10 @@ function exportPDF(){
   for(let i=1;i<=total;i++){
     doc.setPage(i);doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(170,170,170);
     doc.text('Seite '+i+' / '+total,W/2,PH-10,{align:'center'});
-    doc.text('Nachlasspilot – Vertrauliches Nachlassverzeichnis',ML,PH-10);
+    doc.text('Nachlassnavi – Vertrauliches Nachlassverzeichnis',ML,PH-10);
     doc.text(new Date().toLocaleDateString('de-DE'),W-MR,PH-10,{align:'right'});
   }
-  doc.save('nachlasspilot_'+(erl.name||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.pdf');
+  doc.save('nachlassnavi_'+(erl.name||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.pdf');
 }
 
 // =============================================
