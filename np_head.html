@@ -3,17 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nachlasspilot – Nachlassverzeichnis</title>
+<title>Nachlassnavi – Nachlassverzeichnis</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0f1b2d;--navy2:#1a2d47;--navy3:#243d5c;
-  --amber:#e8a235;--amber2:#f5c26b;
+  --navy:#0d2560;--navy2:#162f72;--navy3:#1e3d8f;
+  --amber:#b8952a;--amber2:#d4af4f;
   --cream:#f7f4ef;--cream2:#ede9e0;
-  --text:#1a1a2e;--text2:#4a5568;--text3:#8a97aa;
+  --text:#1a1a2e;--text2:#444444;--text3:#8a97aa;
   --green:#2d7a4f;--green-bg:#e8f5ee;--green-border:#b6ddc7;
   --red:#c0392b;--red-bg:#fdf0ee;--red-border:#f5c6c0;
-  --yellow:#b8860b;--yellow-bg:#fef9e7;
+  --yellow:#b8952a;--yellow-bg:#fef9e7;
   --border:#ddd8cf;
   --radius:6px;--radius-lg:10px;
   --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
@@ -39,11 +41,11 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 /* HEADER */
 .site-header{background:var(--navy);color:white;height:56px;display:flex;align-items:center;padding:0 1.5rem;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .header-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
-.h-logo{display:flex;align-items:center;gap:8px}
-.h-logo-mark{width:28px;height:28px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.h-logo{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+.h-logo-mark{width:28px;height:28px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .h-logo-mark svg{width:16px;height:16px;fill:var(--navy)}
-.h-logo-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;font-weight:600}
-.h-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-left:10px;border-left:1px solid rgba(255,255,255,.15);padding-left:10px;letter-spacing:.06em;text-transform:uppercase}
+.h-logo-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;font-weight:600;white-space:nowrap}
+.h-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-left:10px;border-left:1px solid rgba(255,255,255,.15);padding-left:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .h-actions{display:flex;gap:.4rem;align-items:center}
 .btn-h{display:flex;align-items:center;gap:5px;padding:.35rem .7rem;border-radius:var(--radius);font-size:12px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;border:none;transition:all .15s}
 .btn-h-ghost{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
@@ -75,17 +77,17 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .sb-t-div{height:1px;background:rgba(255,255,255,.1);margin:.3rem 0}
 
 /* MAIN */
-.main-content{margin-left:var(--sidebar-w);flex:1;padding:2rem;min-height:calc(100vh - 56px)}
+.main-content{margin-left:var(--sidebar-w);flex:1;padding:3.5rem 2rem 2rem;height:calc(100vh - 56px);overflow-y:auto;overflow-x:hidden}
 
 /* PAGES */
 .section-page{display:none}.section-page.active{display:block}
-.page-title{font-family:Georgia,'Times New Roman',serif;font-size:1.45rem;font-weight:400;color:var(--navy);margin-bottom:.2rem}
-.page-sub{font-size:12.5px;color:var(--text3);margin-bottom:1.5rem}
+.page-title{font-family:Georgia,'Times New Roman',serif;font-size:1.45rem;font-weight:400;color:var(--navy);margin-bottom:.2rem;word-break:break-word;overflow-wrap:break-word}
+.page-sub{font-size:12.5px;color:var(--text3);margin-bottom:1.5rem;word-break:break-word;overflow-wrap:break-word;white-space:normal}
 
 /* CARDS */
 .card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:1rem;overflow:hidden}
 .card-hd{padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:#fdfcfb}
-.card-title{font-size:.9rem;font-weight:600}
+.card-title{font-size:.9rem;font-weight:600;min-width:0;word-break:break-word}
 .card-body{padding:1.25rem}
 
 /* FORMS */
@@ -111,7 +113,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .pos-hd{display:flex;align-items:center;padding:.7rem 1rem;cursor:pointer;gap:9px;transition:background .15s}
 .pos-hd:hover{background:#fafaf8}
 .pos-num{width:22px;height:22px;background:var(--navy3);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:ui-monospace,'Cascadia Code','Courier New',monospace;flex-shrink:0}
-.pos-title{flex:1;font-size:13.5px;font-weight:500}
+.pos-title{flex:1;font-size:13.5px;font-weight:500;min-width:0;word-break:break-word;overflow-wrap:break-word}
 .pos-val{font-family:ui-monospace,'Cascadia Code','Courier New',monospace;font-size:13px;font-weight:500;color:var(--navy2)}
 .pos-chev{color:var(--text3);transition:transform .2s;font-size:15px}
 .pos-card.open .pos-chev{transform:rotate(180deg)}
@@ -121,10 +123,26 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 /* BUTTONS */
 .btn-add{display:inline-flex;align-items:center;gap:6px;padding:.5rem .95rem;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s;margin-top:.5rem}
 .btn-add:hover{background:var(--navy2)}
+.btn-keine{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border:1.5px solid #ccc;border-radius:var(--radius);background:white;color:#888;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:.5rem;margin-left:.5rem}
+.btn-keine:hover{border-color:var(--navy);color:var(--navy)}
+.btn-keine.active{background:#e8f5ee;color:#2d7a4f;border-color:#2d7a4f}
 .btn-del{background:white;color:var(--red);border:1px solid var(--red-border);border-radius:var(--radius);padding:.25rem .5rem;font-size:11px;font-weight:500;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .15s;margin-left:.4rem}
 .btn-del:hover{background:var(--red-bg)}
 .btn-calc-sm{background:var(--navy);color:white;border:none;border-radius:var(--radius);padding:.42rem .85rem;font-size:12.5px;font-weight:600;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s}
 .btn-calc-sm:hover{background:var(--navy2)}
+
+/* GUTACHTEN UPLOAD */
+.gutachten-area{margin-top:.75rem;padding:.75rem 1rem;background:#f7f4ef;border:1.5px dashed #c8c0b0;border-radius:var(--radius)}
+.gutachten-area-title{font-size:11.5px;font-weight:600;color:#6b5e4a;margin-bottom:.5rem;letter-spacing:.03em;text-transform:uppercase}
+.btn-upload{display:inline-flex;align-items:center;gap:6px;padding:.42rem .85rem;border:1.5px solid #b0a090;border-radius:var(--radius);background:white;color:#6b5e4a;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-upload:hover{border-color:var(--navy);color:var(--navy);background:#f0f4ff}
+.gutachten-list{margin-top:.55rem;display:flex;flex-direction:column;gap:.35rem}
+.gutachten-item{display:flex;align-items:center;gap:.5rem;background:white;border:1px solid #ddd;border-radius:var(--radius);padding:.35rem .6rem;font-size:12px;color:var(--text)}
+.gutachten-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,'Cascadia Code','Courier New',monospace;font-size:11px;color:var(--navy2)}
+.gutachten-item-size{color:#999;font-size:11px;flex-shrink:0}
+.gutachten-item-del{background:none;border:none;color:#bbb;cursor:pointer;font-size:14px;line-height:1;padding:0 .2rem;transition:color .15s;flex-shrink:0}
+.gutachten-item-del:hover{color:var(--red)}
+.gutachten-note{font-size:11px;color:#999;margin-top:.5rem;font-style:italic}
 
 /* SUM ROW */
 .sum-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:var(--navy);color:white;border-radius:var(--radius);margin-top:1rem}
@@ -187,13 +205,30 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .erl-name{font-family:Georgia,'Times New Roman',serif;font-size:1.25rem;margin-bottom:.15rem}
 .erl-meta{font-size:11.5px;opacity:.5}
 
+.hamburger{display:none;background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;padding:.2rem .4rem;line-height:1;margin-right:.4rem;flex-shrink:0}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49}
+.sidebar-overlay.show{display:block}
+
 @media(max-width:720px){
+  .hamburger{display:flex;align-items:center}
   .sidebar{transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:none}
-  .main-content{margin-left:0}
+  .main-content{margin-left:0;padding:3.5rem 1rem 5rem}
   .db-grid{grid-template-columns:1fr}
   .db-total,.db-detail{grid-column:1}
   .form-grid,.form-grid-3,.bw-grid{grid-template-columns:1fr}
+  .h-logo-sub{display:none}
+  .btn-label{display:none}
+  #np-greeting{display:none!important}
+  .site-header{padding:0 .75rem}
+  .as-dot{display:none}
+  .btn-h{padding:.35rem .55rem;font-size:1rem}
+  .contact-fab{bottom:5rem;font-size:12px;padding:.5rem .9rem}
+  .gate-box,.admin-box{padding:2rem 1.25rem}
+  .sum-row{flex-direction:column;gap:.25rem}
+  .btn-add,.btn-keine{margin-left:0;display:inline-flex}
+  .card{padding:1rem}
+  .page-title{font-size:1.3rem}
 }
 .modal-wide{max-width:620px;max-height:82vh;overflow-y:auto}
 .ds-section{margin:1.1rem 0 .3rem;font-size:.8rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);padding-bottom:.3rem}
@@ -203,6 +238,45 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .sb-footer{padding:.6rem .6rem .4rem;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:center;gap:1rem}
 .sb-footer-link{font-size:10px;color:rgba(255,255,255,.3);cursor:pointer;text-decoration:underline;text-underline-offset:2px;transition:color .15s}
 .sb-footer-link:hover{color:rgba(255,255,255,.6)}
+
+/* KONTAKT BUTTON */
+.contact-fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;display:flex;align-items:center;gap:.5rem;padding:.6rem 1.1rem;background:#b8952a;color:white;border:none;border-radius:50px;font-size:13px;font-weight:600;font-family:Arial,sans-serif;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(184,149,42,.4);transition:background .2s,transform .15s,box-shadow .2s}
+.contact-fab:hover{background:#0d2560;transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,37,96,.35)}
+
+/* GATE & ADMIN */
+#np-gate,#admin-panel{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;font-family:Arial,sans-serif;background:#0d2560}
+#np-gate.hidden,#admin-panel.hidden{display:none}
+.gate-box,.admin-box{background:white;border-radius:10px;padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.35);text-align:center}
+.gate-logo{font-family:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;font-size:22px;font-weight:normal;color:#0d2560;letter-spacing:.08em;margin-bottom:.3rem}
+.gate-sub{font-size:12px;color:#444;margin-bottom:2rem;letter-spacing:.05em;text-transform:uppercase}
+.gate-label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#444;text-align:left;margin-bottom:.35rem}
+.gate-input{width:100%;padding:.65rem 1rem;border:1px solid #ccc;border-radius:6px;font-size:15px;font-family:Arial,sans-serif;letter-spacing:.12em;text-align:center;color:#0d2560;margin-bottom:1.2rem;box-sizing:border-box;transition:border-color .15s}
+.gate-input:focus{outline:none;border-color:#0d2560;box-shadow:0 0 0 3px rgba(13,37,96,.1)}
+.gate-btn{width:100%;padding:.75rem;background:#0d2560;color:white;border:none;border-radius:6px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;cursor:pointer;letter-spacing:.04em;transition:background .15s}
+.gate-btn:hover{background:#b8952a}
+.gate-err{font-size:12px;color:#c0392b;margin-top:.75rem;min-height:18px}
+.gate-hint{font-size:11px;color:#888;margin-top:1.5rem}
+.admin-box{max-width:500px;text-align:left}
+.admin-title{font-family:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;font-size:18px;color:#0d2560;margin-bottom:1.2rem}
+.admin-field{margin-bottom:.8rem}
+.admin-field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#444;margin-bottom:.3rem}
+.admin-field input{width:100%;padding:.5rem .75rem;border:1px solid #ccc;border-radius:5px;font-size:13px;font-family:Arial,sans-serif;box-sizing:border-box}
+.admin-field input:focus{outline:none;border-color:#0d2560}
+.admin-codes-list{max-height:140px;overflow-y:auto;border:1px solid #ddd;border-radius:5px;margin-bottom:.8rem;background:#f9f9f9}
+.admin-code-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem .75rem;border-bottom:1px solid #eee;font-size:13px;font-family:monospace;color:#0d2560}
+.admin-code-row:last-child{border-bottom:none}
+.admin-del-btn{background:none;border:none;color:#c0392b;cursor:pointer;font-size:16px;line-height:1;padding:0 .25rem}
+.admin-add-row{display:flex;gap:.5rem;margin-bottom:.8rem}
+.admin-add-row input{flex:1;padding:.5rem .75rem;border:1px solid #ccc;border-radius:5px;font-size:13px;font-family:monospace;box-sizing:border-box}
+.admin-add-row input:focus{outline:none;border-color:#0d2560}
+.admin-sm-btn{padding:.5rem .9rem;background:#0d2560;color:white;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;transition:background .15s;white-space:nowrap}
+.admin-sm-btn:hover{background:#b8952a}
+.admin-sm-btn.secondary{background:#444}
+.admin-sm-btn.secondary:hover{background:#222}
+.admin-save-btn{width:100%;padding:.7rem;background:#b8952a;color:white;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;margin-top:.5rem;transition:background .15s}
+.admin-save-btn:hover{background:#0d2560}
+.admin-close-btn{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:#888;padding:0;line-height:1}
+.admin-msg{font-size:12px;margin-top:.6rem;min-height:16px;color:#2d7a4f}
 </style>
 </head>
 <body>

@@ -12,6 +12,7 @@ import os
 
 files = {
     'jspdf.min.js': 'jsPDF-Bibliothek (lokal, kein CDN)',
+    'pdf-lib.min.js': 'pdf-lib (PDF-Merge, lokal, kein CDN)',
     'plz_lookup.js': 'PLZ-Datenbank (alle deutschen PLZ 01000-99999)',
     'np_head.html': 'HTML-Kopf + vollständiges CSS',
     'np_body.html': 'HTML-Body (Navigation, Formulare, Sektionen)',
@@ -24,14 +25,15 @@ for fname, desc in files.items():
         exit(1)
 
 with open('jspdf.min.js') as f: JSPDF_JS = f.read()
+with open('pdf-lib.min.js') as f: PDFLIB_JS = f.read()
 with open('plz_lookup.js') as f: PLZ_JS = f.read()
 with open('np_head.html') as f: HEAD = f.read()
 with open('np_body.html') as f: BODY = f.read()
 with open('np_script.js') as f: SCRIPT = f.read()
 
-HTML = HEAD + BODY + "<script>\n" + JSPDF_JS + "\n" + PLZ_JS + "\n" + SCRIPT + "\n</script>\n</body>\n</html>"
+HTML = HEAD + BODY + "<script>\n" + JSPDF_JS + "\n" + PDFLIB_JS + "\n" + PLZ_JS + "\n" + SCRIPT + "\n</script>\n</body>\n</html>"
 
-output = 'nachlasspilot.html'
+output = 'index.html'
 with open(output, 'w', encoding='utf-8') as f:
     f.write(HTML)
 

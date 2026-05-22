@@ -1,4 +1,284 @@
 // =============================================
+// GATE & ADMIN
+// =============================================
+const ADMIN_CODE    = 'VSS-ADMIN-2025';
+const FALLBACK_CODE = 'VSS2025';
+const GITHUB_OWNER  = 'CvS-code23';
+const GITHUB_REPO   = 'nachlassnavi';
+
+let npCodes = null;
+
+async function gateLoadCodes(){
+  // Token aus Code-Manager (gleicher localStorage bei file://)
+  const tok = localStorage.getItem('np_cm_token')||'';
+  const hdrs = {'Accept':'application/vnd.github.v3+json'};
+  if(tok) hdrs['Authorization']='token '+tok;
+
+  // 1. GitHub API (immer aktuell, kein CDN-Cache)
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,
+      {headers:hdrs, cache:'no-store'}
+    );
+    if(r.ok){
+      const meta = await r.json();
+      const d = JSON.parse(atob(meta.content.replace(/\s/g,'')));
+      if(Array.isArray(d.codes)&&d.codes.length){npCodes=d.codes;return;}
+    }
+  }catch(e){}
+
+  // 2. Fallback: relative URL (GitHub Pages)
+  try{
+    const r = await fetch(`./codes.json?t=${Date.now()}`);
+    if(r.ok){
+      const d = await r.json();
+      if(Array.isArray(d.codes)&&d.codes.length){npCodes=d.codes;return;}
+    }
+  }catch(e){}
+
+  npCodes=[FALLBACK_CODE];
+}
+
+let npCodesReady = false;
+
+function showGreeting(){
+  const name = sessionStorage.getItem('np_client') || '';
+  if(!name) return;
+  const el = document.getElementById('np-greeting');
+  if(el){ el.textContent = 'Willkommen, ' + name; el.style.display = 'inline'; }
+  const mg = document.getElementById('np-modal-greeting');
+  if(mg){ mg.textContent = 'Hallo, ' + name + '!'; mg.style.display = 'block'; }
+}
+
+(function(){
+  if(sessionStorage.getItem('np_auth')==='1'){
+    const g = document.getElementById('np-gate');
+    if(g) g.remove();
+    showGreeting();
+    if(localStorage.getItem('np_modal_seen')==='1'){
+      const m = document.getElementById('modal_ds');
+      if(m) m.style.display='none';
+    }
+    setTimeout(()=>{initKeine();updateProgress();}, 500);
+  } else {
+    const btn = document.getElementById('gate-btn');
+    if(btn){ btn.disabled=true; btn.textContent='Wird geladen …'; }
+    const urlCode = new URLSearchParams(window.location.search).get('code');
+    gateLoadCodes().then(()=>{
+      npCodesReady = true;
+      if(btn){ btn.disabled=false; btn.textContent='Zugang bestätigen'; }
+      if(urlCode){
+        const inp = document.getElementById('gate-code');
+        if(inp){ inp.value=urlCode; gateSubmit(); }
+      }
+    });
+  }
+})();
+
+async function gateSubmit(){
+  if(!npCodesReady) await gateLoadCodes().then(()=>{ npCodesReady=true; });
+  const v = (document.getElementById('gate-code').value||'').trim().toUpperCase();
+  if(v === ADMIN_CODE.toUpperCase()){ openAdminPanel(); return; }
+  const now = new Date();
+  const list = npCodes || [FALLBACK_CODE];
+  const valid = list.filter(c => {
+    if(typeof c === 'string') return true;
+    return !c.expires || new Date(c.expires) >= now;
+  });
+  const codeValues = valid.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
+  if(codeValues.includes(v)){
+    sessionStorage.setItem('np_auth','1');
+    const matchIdx = codeValues.indexOf(v);
+    const matchEntry = valid[matchIdx];
+    const clientName = (typeof matchEntry === 'object' && matchEntry.client) ? matchEntry.client : '';
+    const salutation = (typeof matchEntry === 'object' && matchEntry.salutation) ? matchEntry.salutation : '';
+    if(clientName) sessionStorage.setItem('np_client', clientName);
+    if(salutation) sessionStorage.setItem('np_salutation', salutation); else sessionStorage.removeItem('np_salutation');
+    showGreeting();
+    const g = document.getElementById('np-gate');
+    if(g) g.remove();
+    setTimeout(()=>{initKeine();updateProgress();}, 300);
+  } else {
+    const err = document.getElementById('gate-err');
+    const allCodes = list.map(c => (typeof c === 'string' ? c : c.code).toUpperCase());
+    const isExpired = allCodes.includes(v);
+    const msg = isExpired
+      ? 'Dieser Zugangscode ist abgelaufen. Bitte einen neuen Code anfordern.'
+      : `Ungültiger Code. (${list.length} Code${list.length!==1?'s':''} geladen)`;
+    if(err) err.textContent = msg;
+    const inp = document.getElementById('gate-code');
+    if(inp){ inp.value=''; inp.focus(); }
+  }
+}
+
+function openAdminPanel(){
+  const g = document.getElementById('np-gate');
+  if(g) g.classList.add('hidden');
+  const p = document.getElementById('admin-panel');
+  if(p) p.classList.remove('hidden');
+  const tok = localStorage.getItem('np_admin_token')||'';
+  const ti = document.getElementById('admin-token');
+  if(ti) ti.value = tok;
+  adminLoadPanel();
+}
+
+function adminClose(){
+  document.getElementById('admin-panel').classList.add('hidden');
+  document.getElementById('np-gate').classList.remove('hidden');
+  document.getElementById('gate-code').value='';
+}
+
+function adminLoadPanel(){
+  if(!npCodes) npCodes = [FALLBACK_CODE];
+  adminRenderCodes();
+}
+
+function adminRenderCodes(){
+  const list = document.getElementById('admin-codes-list');
+  if(!list) return;
+  if(!npCodes||!npCodes.length){ list.innerHTML='<div style="padding:.6rem .75rem;color:#888;font-size:12px">Keine Codes</div>'; return; }
+  list.innerHTML = npCodes.map(c=>`
+    <div class="admin-code-row">
+      <span>${c}</span>
+      <div>
+        <button class="admin-del-btn" onclick="adminDeleteCode('${c}')" title="Löschen">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function adminDeleteCode(code){
+  npCodes = (npCodes||[]).filter(c=>c!==code);
+  adminRenderCodes();
+}
+
+function adminGenCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='NP-';
+  for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  const inp = document.getElementById('admin-new-code');
+  if(inp) inp.value=code;
+}
+
+function adminAddCode(){
+  const inp = document.getElementById('admin-new-code');
+  const val = (inp?inp.value:'').trim().toUpperCase();
+  if(!val){ setAdminMsg('Bitte einen Code eingeben.','#c0392b'); return; }
+  if(!npCodes) npCodes=[];
+  if(npCodes.map(c=>c.toUpperCase()).includes(val)){ setAdminMsg('Code bereits vorhanden.','#b8952a'); return; }
+  npCodes.push(val);
+  if(inp) inp.value='';
+  adminRenderCodes();
+  setAdminMsg('Code hinzugefügt. Bitte speichern!','#b8952a');
+}
+
+function adminSaveToken(){
+  const v = (document.getElementById('admin-token')||{}).value||'';
+  localStorage.setItem('np_admin_token', v);
+}
+
+async function adminSaveCodes(){
+  const token = localStorage.getItem('np_admin_token')||'';
+  if(!token){ setAdminMsg('Bitte zuerst ein GitHub Token eingeben.','#c0392b'); return; }
+  if(!npCodes||!npCodes.length){ setAdminMsg('Keine Codes zum Speichern.','#c0392b'); return; }
+  setAdminMsg('Wird gespeichert…','#444');
+  try{
+    const getR = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,{
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
+    });
+    let sha='';
+    if(getR.ok){ const d=await getR.json(); sha=d.sha||''; }
+    const content = btoa(JSON.stringify({codes:npCodes},null,2));
+    const body = {message:'Zugangscodes aktualisiert',content};
+    if(sha) body.sha=sha;
+    const putR = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/codes.json`,{
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(putR.ok){
+      setAdminMsg('✓ Gespeichert! Codes sind jetzt aktiv.','#2d7a4f');
+    } else {
+      const err=await putR.json();
+      setAdminMsg('Fehler: '+(err.message||putR.status),'#c0392b');
+    }
+  } catch(e){ setAdminMsg('Netzwerkfehler: '+e.message,'#c0392b'); }
+}
+
+function setAdminMsg(msg,color){
+  const el=document.getElementById('admin-msg');
+  if(el){el.textContent=msg;el.style.color=color||'#2d7a4f';}
+}
+
+// =============================================
+// GUTACHTEN UPLOAD (RAM-only, kein localStorage)
+// =============================================
+const GUTACHTEN = {};
+
+function uploadGutachten(section, input) {
+  if (!GUTACHTEN[section]) GUTACHTEN[section] = [];
+  const files = Array.from(input.files);
+  const promises = files.map(f => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res({name: f.name, size: f.size, data: e.target.result});
+    r.onerror = rej;
+    r.readAsArrayBuffer(f);
+  }));
+  Promise.all(promises).then(loaded => {
+    GUTACHTEN[section].push(...loaded);
+    renderGutachtenList(section);
+    input.value = '';
+  });
+}
+
+function removeGutachten(section, idx) {
+  if (GUTACHTEN[section]) {
+    GUTACHTEN[section].splice(idx, 1);
+    renderGutachtenList(section);
+  }
+}
+
+function renderGutachtenList(section) {
+  const list = document.getElementById('gu_list_' + section);
+  if (!list) return;
+  const items = GUTACHTEN[section] || [];
+  list.innerHTML = items.map((f, i) =>
+    `<div class="gutachten-item">` +
+    `<span class="gutachten-item-name" title="${f.name}">📄 ${f.name}</span>` +
+    `<span class="gutachten-item-size">${(f.size/1024).toFixed(0)} KB</span>` +
+    `<button class="gutachten-item-del" onclick="removeGutachten('${section}',${i})" title="Entfernen">&times;</button>` +
+    `</div>`
+  ).join('');
+}
+
+function hasGutachten() {
+  return Object.values(GUTACHTEN).some(arr => arr && arr.length > 0);
+}
+
+async function mergeAndSavePDF(jspdfDoc, fname) {
+  const {PDFDocument} = window.PDFLib;
+  const mainBytes = jspdfDoc.output('arraybuffer');
+  const merged = await PDFDocument.load(mainBytes);
+  const cats = ['immobilien','bankkonten','wertpapiere','fahrzeuge','versicherungen','beteiligungen','wertgegenstaende','forderungen','sonstiges','verbindlichkeiten'];
+  for (const cat of cats) {
+    for (const f of (GUTACHTEN[cat] || [])) {
+      try {
+        const ext = await PDFDocument.load(f.data, {ignoreEncryption: true});
+        const pages = await merged.copyPages(ext, ext.getPageIndices());
+        pages.forEach(p => merged.addPage(p));
+      } catch(e) {
+        console.warn('Fehler beim Anhängen:', f.name, e);
+      }
+    }
+  }
+  const bytes = await merged.save();
+  const blob = new Blob([bytes], {type: 'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fname; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// =============================================
 // STATE & AUTO-SAVE
 // =============================================
 const STATE = {
@@ -39,7 +319,20 @@ function loadAll(data){
 // =============================================
 // NAVIGATION
 // =============================================
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  if(sb) sb.classList.toggle('open');
+  if(ov) ov.classList.toggle('show');
+}
+
 function showPage(name){
+  const mc=document.querySelector('.main-content');if(mc)mc.scrollTop=0;
+  // Close sidebar on mobile after navigation
+  const sb=document.querySelector('.sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  if(sb&&sb.classList.contains('open')){sb.classList.remove('open');if(ov)ov.classList.remove('show');}
+  updateProgress();
   document.querySelectorAll('.section-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page_'+name).classList.add('active');
@@ -48,7 +341,42 @@ function showPage(name){
   });
   if(name==='dashboard')renderDashboard();
 }
-function closeModal(){document.getElementById('modal_ds').style.display='none';}
+function closeModal(){document.getElementById('modal_ds').style.display='none';localStorage.setItem('np_modal_seen','1');}
+
+const KEINE_LABELS={immobilien:'Immobilien',bankkonten:'Bankkonten',wertpapiere:'Wertpapiere',fahrzeuge:'Fahrzeuge',versicherungen:'Versicherungen',beteiligungen:'Beteiligungen',wertgegenstaende:'Wertgegenstände',forderungen:'Forderungen',sonstiges:'sonstiges Vermögen',verbindlichkeiten:'Verbindlichkeiten'};
+
+function toggleKeine(section){
+  const key='np_keine_'+section;
+  localStorage.setItem(key, localStorage.getItem(key)==='1'?'0':'1');
+  renderKeineBtn(section);
+  updateProgress();
+}
+
+function renderKeineBtn(section){
+  const btn=document.getElementById('keine_'+section);
+  if(!btn)return;
+  const active=localStorage.getItem('np_keine_'+section)==='1';
+  btn.textContent=(active?'☑ ':'☐ ')+'Keine '+KEINE_LABELS[section]+' vorhanden';
+  btn.className='btn-keine'+(active?' active':'');
+}
+
+function initKeine(){Object.keys(KEINE_LABELS).forEach(s=>renderKeineBtn(s));}
+
+function updateProgress(){
+  const secs=['immobilien','bankkonten','wertpapiere','fahrzeuge','versicherungen','beteiligungen','wertgegenstaende','forderungen','sonstiges','verbindlichkeiten'];
+  let filled=secs.filter(s=>{
+    const el=document.getElementById('ns_'+s);
+    const hasItems=el&&el.textContent.trim()!=='–'&&el.textContent.trim()!=='0'&&el.textContent.trim()!=='';
+    return hasItems||localStorage.getItem('np_keine_'+s)==='1';
+  }).length;
+  const erlName=document.getElementById('erl_name');
+  if(erlName&&erlName.value.trim())filled++;
+  const total=secs.length+1;
+  const bar=document.getElementById('progress-bar-fill');
+  const txt=document.getElementById('progress-text');
+  if(bar)bar.style.width=Math.round(filled/total*100)+'%';
+  if(txt)txt.textContent=filled+' / '+total+' Bereiche ausgefüllt';
+}
 function openDSModal(){document.getElementById('modal_dserkl').style.display='flex';}
 function closeDSModal(){document.getElementById('modal_dserkl').style.display='none';}
 
@@ -482,7 +810,7 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(snap(),null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='nachlasspilot_'+(gv('erl_name')||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
+  a.download='nachlassnavi_'+(gv('erl_name')||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
   a.click();
 }
 function importJSON(evt){
@@ -495,7 +823,7 @@ function importJSON(evt){
 // =============================================
 // PDF EXPORT
 // =============================================
-function exportPDF(){
+async function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const W=210,ML=20,MR=20,TW=170,PH=297,MB=22;
@@ -518,7 +846,7 @@ function exportPDF(){
   doc.setFillColor(232,162,53);doc.rect(0,55,W,2.5,'F');
   T('NACHLASSPILOT',ML,20,22,'bold',[255,255,255]);
   T('Nachlassverzeichnis',ML,31,13,'normal',[200,210,220]);
-  T('Vertrauliches Dokument – erstellt mit Nachlasspilot',ML,41,8,'italic',[140,155,175]);
+  T('Vertrauliches Dokument – erstellt mit Nachlassnavi',ML,41,8,'italic',[140,155,175]);
   y=68;
   T('ERBLASSER',ML,y,8,'bold',[150,150,150]);y+=6;
   T(erl.name||'(Name nicht angegeben)',ML,y,17,'bold',[15,27,45]);y+=9;
@@ -630,10 +958,15 @@ function exportPDF(){
   for(let i=1;i<=total;i++){
     doc.setPage(i);doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(170,170,170);
     doc.text('Seite '+i+' / '+total,W/2,PH-10,{align:'center'});
-    doc.text('Nachlasspilot – Vertrauliches Nachlassverzeichnis',ML,PH-10);
+    doc.text('Nachlassnavi – Vertrauliches Nachlassverzeichnis',ML,PH-10);
     doc.text(new Date().toLocaleDateString('de-DE'),W-MR,PH-10,{align:'right'});
   }
-  doc.save('nachlasspilot_'+(erl.name||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.pdf');
+  const fname='nachlassnavi_'+(erl.name||'nachlass').replace(/\s+/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.pdf';
+  if(hasGutachten()){
+    await mergeAndSavePDF(doc,fname);
+  } else {
+    doc.save(fname);
+  }
 }
 
 // =============================================

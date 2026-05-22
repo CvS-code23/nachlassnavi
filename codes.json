@@ -1,5 +1,10 @@
 {
   "codes": [
-    "VSS2025"
+    {
+      "code": "VSS2025",
+      "client": "Testzugang",
+      "created": "2026-05-21",
+      "expires": "2099-12-31"
+    }
   ]
 }
