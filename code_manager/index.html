@@ -77,7 +77,21 @@ tr:last-child td{border-bottom:none}
 .msg{font-size:13px;min-height:18px}
 .msg-ok{color:#2d7a4f}.msg-err{color:#c0392b}.msg-info{color:#b8860b}
 .empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
-@media(max-width:640px){.new-code-form{grid-template-columns:1fr 1fr;}.new-code-form .btn{margin-top:.5rem}}
+@media(max-width:640px){
+  .new-code-form{grid-template-columns:1fr 1fr;}
+  .new-code-form .btn{margin-top:.5rem}
+  .main{padding:0 .75rem}
+  .card{padding:1rem}
+  table th:nth-child(n+3), table td.td-hide{display:none}
+  .mobile-detail.open{display:table-row}
+  .mobile-detail td{padding:.5rem .8rem .75rem;background:#fafaf8;border-bottom:1px solid #f0efeb}
+  .expand-icon{margin-left:.35rem;font-size:.7rem;color:#b8952a;display:inline-block}
+  .data-row{cursor:pointer}
+}
+@media(min-width:641px){
+  .mobile-detail{display:none!important}
+  .expand-icon{display:none}
+}
 </style>
 </head>
 <body>
@@ -236,6 +250,7 @@ function renderTable(){
   }
   const rows = codes.map(c => {
     const d = daysLeft(c.expires);
+    const cid = escHtml(c.code);
     let badge, status;
     if(d < 0){
       badge = '<span class="badge badge-exp">Abgelaufen</span>'; status = 'exp';
@@ -244,15 +259,28 @@ function renderTable(){
     } else {
       badge = `<span class="badge badge-ok">Aktiv – noch ${d} Tage</span>`; status = 'ok';
     }
-    return `<tr style="${status==='exp'?'opacity:.5':''}">
-      <td>${c.salutation ? escHtml(c.salutation)+' ' : ''}${escHtml(c.client)}</td>
-      <td><span class="code-val" onclick="copyCode('${escHtml(c.code)}')" title="Klicken zum Kopieren" style="cursor:pointer">${escHtml(c.code)}</span></td>
-      <td>${c.created}</td>
-      <td>${c.expires}</td>
-      <td>${badge}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" style="min-width:72px" onclick="extendCode('${escHtml(c.code)}')">+7 Tage</button>
-        <button class="btn btn-danger" style="min-width:72px;margin-left:.3rem" onclick="removeCode('${escHtml(c.code)}')">Löschen</button>
+    return `<tr class="data-row" onclick="toggleDetail('${cid}')" style="${status==='exp'?'opacity:.5':''}">
+      <td>${c.salutation ? escHtml(c.salutation)+' ' : ''}${escHtml(c.client)}<span class="expand-icon" id="icon-${cid}">▶</span></td>
+      <td onclick="event.stopPropagation()"><span class="code-val" onclick="copyCode('${cid}')" title="Klicken zum Kopieren" style="cursor:pointer">${cid}</span></td>
+      <td class="td-hide">${c.created}</td>
+      <td class="td-hide">${c.expires}</td>
+      <td class="td-hide">${badge}</td>
+      <td class="td-hide" style="white-space:nowrap">
+        <button class="btn btn-sm" style="min-width:72px" onclick="extendCode('${cid}')">+7 Tage</button>
+        <button class="btn btn-danger" style="min-width:72px;margin-left:.3rem" onclick="removeCode('${cid}')">Löschen</button>
+      </td>
+    </tr>
+    <tr class="mobile-detail" id="detail-${cid}">
+      <td colspan="2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .75rem;margin-bottom:.6rem;font-size:12px">
+          <div><div style="text-transform:uppercase;font-size:10px;color:#888;font-weight:600;letter-spacing:.06em;margin-bottom:.15rem">Erstellt</div>${c.created || '–'}</div>
+          <div><div style="text-transform:uppercase;font-size:10px;color:#888;font-weight:600;letter-spacing:.06em;margin-bottom:.15rem">Läuft ab</div>${c.expires}</div>
+          <div style="grid-column:1/-1;margin-top:.1rem">${badge}</div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-sm" style="flex:1" onclick="extendCode('${cid}')">+7 Tage</button>
+          <button class="btn btn-danger" style="flex:1" onclick="removeCode('${cid}')">Löschen</button>
+        </div>
       </td>
     </tr>`;
   }).join('');
@@ -276,6 +304,15 @@ function extendCode(code){
   setMsg('Gültigkeit verlängert – bitte speichern!', 'warn');
 }
 
+
+function toggleDetail(code){
+  if(window.innerWidth > 640) return;
+  const detail = document.getElementById('detail-'+code);
+  const icon   = document.getElementById('icon-'+code);
+  if(!detail) return;
+  detail.classList.toggle('open');
+  if(icon) icon.textContent = detail.classList.contains('open') ? '▼' : '▶';
+}
 
 function copyCode(code){
   navigator.clipboard.writeText(code).then(()=>{
