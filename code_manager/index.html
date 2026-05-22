@@ -97,6 +97,10 @@ tr:last-child td{border-bottom:none}
   .mobile-detail td{padding:.5rem .8rem .75rem;background:#fafaf8;border-bottom:1px solid #f0efeb}
   .name-cell{cursor:pointer}
 }
+@media(max-width:480px){
+  .new-code-form{grid-template-columns:1fr;}
+  .new-code-form .btn{margin-top:0}
+}
 @media(min-width:901px){
   .mobile-detail{display:none!important}
   .expand-icon{display:none!important}
@@ -178,7 +182,7 @@ tr:last-child td{border-bottom:none}
       <div class="empty">Bitte zuerst Codes laden (Token eingeben → „Codes laden").</div>
     </div>
     <div style="margin-top:1.2rem" class="save-bar">
-      <button class="btn btn-gold" onclick="saveCodes()" style="min-width:220px">💾 Speichern &amp; auf GitHub veröffentlichen</button>
+      <button class="btn btn-gold" onclick="saveCodes()" style="min-width:220px">Speichern</button>
       <div class="msg" id="save-msg"></div>
     </div>
   </div>
