@@ -1,10 +1,46 @@
 {
   "codes": [
     {
-      "code": "VSS2025",
-      "client": "Testzugang",
+      "code": "NP-M77F74",
+      "client": "Carl von Schoenebeck",
       "created": "2026-05-21",
-      "expires": "2099-12-31"
+      "expires": "2026-06-04"
+    },
+    {
+      "code": "NP-WJDFNB",
+      "client": "Astrid von Schoenebeck",
+      "created": "2026-05-21",
+      "expires": "2026-06-04"
+    },
+    {
+      "code": "NP-WHDBMN",
+      "client": "Max Mustermann",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
+    },
+    {
+      "code": "NP-8X3PDF",
+      "client": "Mara Musterfrau",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
+    },
+    {
+      "code": "NP-3T37ZZ",
+      "client": "Emil Detektiv",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
+    },
+    {
+      "code": "NP-AAAVVN",
+      "client": "Frodo Beutlin",
+      "created": "2026-05-21",
+      "expires": "2026-05-28"
+    },
+    {
+      "code": "22052026",
+      "client": "Christian Vandrey",
+      "created": "2026-05-22",
+      "expires": "2026-05-29"
     }
   ]
 }
