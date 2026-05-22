@@ -258,7 +258,7 @@ async function mergeAndSavePDF(jspdfDoc, fname) {
   const {PDFDocument} = window.PDFLib;
   const mainBytes = jspdfDoc.output('arraybuffer');
   const merged = await PDFDocument.load(mainBytes);
-  const cats = ['immobilien','bankkonten','wertpapiere','fahrzeuge','versicherungen','beteiligungen','wertgegenstaende','forderungen','sonstiges','verbindlichkeiten'];
+  const cats = ['immobilien','fahrzeuge','beteiligungen','wertgegenstaende'];
   for (const cat of cats) {
     for (const f of (GUTACHTEN[cat] || [])) {
       try {

@@ -238,13 +238,6 @@
     <button class="btn-add" onclick="addPos('bankkonten')">+ Konto / Bargeld hinzufügen</button>
     <button class="btn-keine" id="keine_bankkonten" onclick="toggleKeine('bankkonten')">☐ Keine Bankkonten vorhanden</button>
     <div class="sum-row" id="sum_bankkonten" style="display:none"><span class="sum-label">Summe Bankguthaben & Bargeld</span><span class="sum-val" id="sv_bankkonten">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_bankkonten" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('bankkonten',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_bankkonten').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_bankkonten"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- WERTPAPIERE -->
@@ -255,13 +248,6 @@
     <button class="btn-add" onclick="addPos('wertpapiere')">+ Wertpapier / Depot hinzufügen</button>
     <button class="btn-keine" id="keine_wertpapiere" onclick="toggleKeine('wertpapiere')">☐ Keine Wertpapiere vorhanden</button>
     <div class="sum-row" id="sum_wertpapiere" style="display:none"><span class="sum-label">Summe Wertpapiere</span><span class="sum-val" id="sv_wertpapiere">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_wertpapiere" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('wertpapiere',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_wertpapiere').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_wertpapiere"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- FAHRZEUGE -->
@@ -289,13 +275,6 @@
     <button class="btn-add" onclick="addPos('versicherungen')">+ Versicherung hinzufügen</button>
     <button class="btn-keine" id="keine_versicherungen" onclick="toggleKeine('versicherungen')">☐ Keine Versicherungen vorhanden</button>
     <div class="sum-row" id="sum_versicherungen" style="display:none"><span class="sum-label">Summe Versicherungen (Rückkaufwerte)</span><span class="sum-val" id="sv_versicherungen">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_versicherungen" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('versicherungen',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_versicherungen').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_versicherungen"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- BETEILIGUNGEN -->
@@ -340,13 +319,6 @@
     <button class="btn-add" onclick="addPos('forderungen')">+ Forderung hinzufügen</button>
     <button class="btn-keine" id="keine_forderungen" onclick="toggleKeine('forderungen')">☐ Keine Forderungen vorhanden</button>
     <div class="sum-row" id="sum_forderungen" style="display:none"><span class="sum-label">Summe Forderungen</span><span class="sum-val" id="sv_forderungen">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_forderungen" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('forderungen',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_forderungen').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_forderungen"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- SONSTIGES -->
@@ -357,13 +329,6 @@
     <button class="btn-add" onclick="addPos('sonstiges')">+ Position hinzufügen</button>
     <button class="btn-keine" id="keine_sonstiges" onclick="toggleKeine('sonstiges')">☐ Kein sonstiges Vermögen vorhanden</button>
     <div class="sum-row" id="sum_sonstiges" style="display:none"><span class="sum-label">Summe Sonstiges</span><span class="sum-val" id="sv_sonstiges">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_sonstiges" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('sonstiges',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_sonstiges').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_sonstiges"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- VERBINDLICHKEITEN -->
@@ -374,13 +339,6 @@
     <button class="btn-add" onclick="addPos('verbindlichkeiten')">+ Verbindlichkeit hinzufügen</button>
     <button class="btn-keine" id="keine_verbindlichkeiten" onclick="toggleKeine('verbindlichkeiten')">☐ Keine Verbindlichkeiten vorhanden</button>
     <div class="sum-row" id="sum_verbindlichkeiten" style="display:none;background:var(--red)"><span class="sum-label">Summe Verbindlichkeiten</span><span class="sum-val" id="sv_verbindlichkeiten">–</span></div>
-    <div class="gutachten-area">
-      <div class="gutachten-area-title">📎 Gutachten & Belege</div>
-      <input type="file" id="gu_input_verbindlichkeiten" accept="application/pdf" multiple style="display:none" onchange="uploadGutachten('verbindlichkeiten',this)">
-      <button class="btn-upload" onclick="document.getElementById('gu_input_verbindlichkeiten').click()">PDF hochladen</button>
-      <div class="gutachten-list" id="gu_list_verbindlichkeiten"></div>
-      <div class="gutachten-note">Hochgeladene Dateien werden beim PDF-Export angehängt. Sie gehen verloren, wenn die Seite neu geladen wird.</div>
-    </div>
   </div>
 
   <!-- DASHBOARD -->
